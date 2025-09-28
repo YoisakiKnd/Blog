@@ -1,6 +1,13 @@
 ---
 import Icon from "../misc/Icon.astro";
 
+// 声明window的iconifyLoaded属性
+declare global {
+	interface Window {
+		iconifyLoaded?: boolean;
+	}
+}
+
 export interface Props {
 	item: {
 		id: string;
@@ -11,22 +18,21 @@ export interface Props {
 		endDate?: string;
 		location?: string;
 		organization?: string;
-		position?: string            {formatDate(item.startDate)} - {item.endDate ? formatDate(item.endDate) : "至今"}
-({getDuration(_item_startDatee_item_endDateate)})
-skills?: string[];
-achievements?: string[];
-links?: {
+		position?: string;
+		skills?: string[];
+		achievements?: string[];
+		links?: {
 			name: string;
-url: string;
-type: "website" | "certificate" | "project" | "other";
-}[]
-icon?: string;
-color?: string;
-featured?: boolean;
-}
-showTimeline?: boolean;
-size?: "small" | "medium" | "large";
-layout?: "card" | "timeline";
+			url: string;
+			type: "website" | "certificate" | "project" | "other";
+		}[];
+		icon?: string;
+		color?: string;
+		featured?: boolean;
+	};
+	showTimeline?: boolean;
+	size?: "small" | "medium" | "large";
+	layout?: "card" | "timeline";
 }
 
 const {
@@ -306,7 +312,7 @@ const itemColor = item.color || "#3B82F6";
       
       <!-- 时间信息 -->
       <div class={`text-black/70 dark:text-white/70 mb-3 ${sizeClasses.meta}`}>
-        {formatDate(item.startDate)} - {item.endDate ? formatDate(item.endDate) : i18n(I18nKey.timelinePresent)} ({getDuration(item.startDate, item.endDate)})
+        {formatDate(item.startDate)} - {item.endDate ? formatDate(item.endDate) : "至今"} ({getDuration(item.startDate, item.endDate)})
       </div>
       
       <!-- 描述 -->
@@ -318,7 +324,7 @@ const itemColor = item.color || "#3B82F6";
       {item.achievements && item.achievements.length > 0 && (
         <div class="mb-4">
           <h4 class={`font-semibold text-black/80 dark:text-white/80 mb-2 ${sizeClasses.meta}`}>
-            {i18n(I18nKey.timelineAchievements)}
+            主要成就
           </h4>
           <ul class="space-y-1">
             {item.achievements.slice(0, 3).map((achievement) => (
