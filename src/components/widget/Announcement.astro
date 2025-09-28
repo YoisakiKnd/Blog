@@ -1,8 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
 import { announcementConfig } from "../../config";
-import I18nKey from "../../i18n/i18nKey";
-import { i18n } from "../../i18n/translation";
 import WidgetLayout from "./WidgetLayout.astro";
 
 const config = announcementConfig;
@@ -17,7 +15,7 @@ const style = Astro.props.style;
 
 <!-- 组件显示现在由sidebarLayoutConfig统一控制，无需检查config.enable -->
 <WidgetLayout 
-    name={config.title || i18n(I18nKey.announcement)} 
+    name={config.title || "公告"} 
     id="announcement"
     class={className} 
     style={style}
@@ -48,7 +46,7 @@ const style = Astro.props.style;
                 <button 
                     class="btn-regular rounded-lg h-8 w-8 text-sm hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
                     onclick="closeAnnouncement()"
-                    aria-label={i18n(I18nKey.announcementClose)}
+                    aria-label="关闭公告"
                 >
                     <Icon name="fa6-solid:xmark" class="text-sm" />
                 </button>

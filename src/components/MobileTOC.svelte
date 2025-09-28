@@ -1,8 +1,6 @@
 <script lang="ts">
 import Icon from "@iconify/svelte";
 import { onMount } from "svelte";
-import I18nKey from "../i18n/i18nKey";
-import { i18n } from "../i18n/translation";
 import { navigateToPage } from "../utils/navigation-utils";
 
 let tocItems: Array<{ id: string; text: string; level: number }> = [];
@@ -235,7 +233,7 @@ if (typeof window !== "undefined") {
 		top-20 left-4 md:left-[unset] right-4 shadow-2xl rounded-2xl p-4"
 >
 	<div class="flex items-center justify-between mb-4">
-		<h3 class="text-lg font-bold text-[var(--primary)]">{isHomePage ? i18n(I18nKey.postList) : i18n(I18nKey.tableOfContents)}</h3>
+		<h3 class="text-lg font-bold text-[var(--primary)]">{isHomePage ? "文章列表" : "目录"}</h3>
 		<button 
 			on:click={togglePanel}
 			aria-label="Close TOC"

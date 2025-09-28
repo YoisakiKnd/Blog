@@ -2,10 +2,7 @@
 import ImageWrapper from "../components/misc/ImageWrapper.astro";
 import { siteConfig } from "../config";
 import localAnimeList from "../data/anime";
-import I18nKey from "../i18n/i18nKey";
-import { i18n } from "../i18n/translation";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
-import { siteConfig } from "../config";
 
 // Bangumi API配置
 const BANGUMI_USER_ID = siteConfig.bangumi?.userId || "your-user-id"; // 用户ID
@@ -154,21 +151,21 @@ function getStatusInfo(status: string) {
 	switch (status) {
 		case "watching":
 			return {
-				text: i18n(I18nKey.animeStatusWatching),
+				text: "观看中",
 				class:
 					"bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
 				icon: "▶",
 			};
 		case "completed":
 			return {
-				text: i18n(I18nKey.animeStatusCompleted),
+				text: "已完成",
 				class:
 					"bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
 				icon: "✓",
 			};
 		case "planned":
 			return {
-				text: i18n(I18nKey.animeStatusPlanned),
+				text: "计划观看",
 				class:
 					"bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
 				icon: "⏰",
@@ -198,14 +195,14 @@ const stats = {
 };
 ---
 
-<MainGridLayout title={i18n(I18nKey.anime)} description={i18n(I18nKey.animeSubtitle)}>
+<MainGridLayout title="我的追番" description="这里展示了我正在追的番剧和看过的番剧。">
   <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
     <div class="card-base z-10 px-9 py-6 relative w-full">
       <!-- 页面标题 -->
       <div class="relative w-full mb-8">
         <div class="mb-6">
-          <h1 class="text-4xl font-bold text-black/90 dark:text-white/90 mb-2">{i18n(I18nKey.animeTitle)}</h1>
-          <p class="text-black/75 dark:text-white/75">{i18n(I18nKey.animeSubtitle)}</p>
+          <h1 class="text-4xl font-bold text-black/90 dark:text-white/90 mb-2">我的追番</h1>
+          <p class="text-black/75 dark:text-white/75">这里展示了我正在追的番剧和看过的番剧。</p>
         </div>
         
         <!-- 统计卡片 -->
@@ -215,7 +212,7 @@ const stats = {
               <div class="text-2xl">📊</div>
               <div>
                 <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.total}</div>
-                <div class="text-sm text-blue-600/70 dark:text-blue-400/70">{i18n(I18nKey.animeTotal)}</div>
+                <div class="text-sm text-blue-600/70 dark:text-blue-400/70">总计</div>
               </div>
             </div>
           </div>
@@ -224,7 +221,7 @@ const stats = {
               <div class="text-2xl">▶️</div>
               <div>
                 <div class="text-2xl font-bold text-green-600 dark:text-green-400">{stats.watching}</div>
-                <div class="text-sm text-green-600/70 dark:text-green-400/70">{i18n(I18nKey.animeWatching)}</div>
+                <div class="text-sm text-green-600/70 dark:text-green-400/70">观看中</div>
               </div>
             </div>
           </div>
@@ -233,7 +230,7 @@ const stats = {
               <div class="text-2xl">✅</div>
               <div>
                 <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.completed}</div>
-                <div class="text-sm text-purple-600/70 dark:text-purple-400/70">{i18n(I18nKey.animeCompleted)}</div>
+                <div class="text-sm text-purple-600/70 dark:text-purple-400/70">已完成</div>
               </div>
             </div>
           </div>
@@ -242,7 +239,7 @@ const stats = {
               <div class="text-2xl">⭐</div>
               <div>
                 <div class="text-2xl font-bold text-orange-600 dark:text-orange-400">{stats.avgRating}</div>
-                <div class="text-sm text-orange-600/70 dark:text-orange-400/70">{i18n(I18nKey.animeAvgRating)}</div>
+                <div class="text-sm text-orange-600/70 dark:text-orange-400/70">平均评分</div>
               </div>
             </div>
           </div>
@@ -252,7 +249,7 @@ const stats = {
       <!-- 动漫列表 -->
       <div class="mb-8">
         <h2 class="text-2xl font-bold text-black/90 dark:text-white/90 mb-4">
-          {i18n(I18nKey.animeList)}
+          番剧列表
         </h2>
         
         {ANIME_MODE !== 'local' && BANGUMI_USER_ID === 'your-user-id' ? (
@@ -327,11 +324,11 @@ const stats = {
                     <!-- 详细信息 - 更紧凑 -->
                     <div class="space-y-1 text-xs">
                       <div class="flex justify-between">
-                        <span class="text-black/50 dark:text-white/50">{i18n(I18nKey.animeYear)}</span>
+                        <span class="text-black/50 dark:text-white/50">放送年份</span>
                         <span class="text-black/70 dark:text-white/70">{anime.year}</span>
                       </div>
                       <div class="flex justify-between">
-                        <span class="text-black/50 dark:text-white/50">{i18n(I18nKey.animeStudio)}</span>
+                        <span class="text-black/50 dark:text-white/50">制作公司</span>
                         <span class="text-black/70 dark:text-white/70 truncate ml-2">{anime.studio}</span>
                       </div>
                       <div class="flex flex-wrap gap-1 mt-2">
@@ -349,10 +346,10 @@ const stats = {
           <div class="text-center py-12">
             <div class="text-5xl mb-4">😢</div>
             <h3 class="text-xl font-medium text-black/80 dark:text-white/80 mb-2">
-              {i18n(I18nKey.animeEmpty)}
+              暂无番剧数据
             </h3>
             <p class="text-black/60 dark:text-white/60">
-              {ANIME_MODE === 'local' ? i18n(I18nKey.animeEmptyLocal) : i18n(I18nKey.animeEmptyBangumi)}
+              {ANIME_MODE === 'local' ? '请在 src/data/anime.ts 中添加番剧数据' : '请检查 Bangumi API 配置是否正确'}
             </p>
           </div>
         )}

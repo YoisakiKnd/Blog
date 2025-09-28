@@ -4,21 +4,20 @@ import Comment from "@components/comment/index.astro";
 import License from "@components/misc/License.astro";
 import Markdown from "@components/misc/Markdown.astro";
 import PasswordProtection from "@components/PasswordProtection.astro";
-import I18nKey from "@i18n/i18nKey";
-import { i18n } from "@i18n/translation";
+
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getSortedPosts } from "@utils/content-utils";
 import { getDir, getPostUrlBySlug } from "@utils/url-utils";
 import { Icon } from "astro-icon/components";
+import bcryptjs from "bcryptjs";
+import CryptoJS from "crypto-js";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import { licenseConfig } from "src/config";
 import ImageWrapper from "../../components/misc/ImageWrapper.astro";
 import PostMetadata from "../../components/PostMeta.astro";
 import { profileConfig, siteConfig } from "../../config";
 import { formatDateToYYYYMMDD } from "../../utils/date-utils";
-import CryptoJS from "crypto-js";
-import bcryptjs from "bcryptjs";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
 export async function getStaticPaths() {
 	const blogEntries = await getSortedPosts();
 	return blogEntries.map((entry) => ({
@@ -52,7 +51,6 @@ if (isEncrypted) {
 	const saltRounds = 10;
 	passwordHash = bcryptjs.hashSync(entry.data.password, saltRounds);
 }
-
 
 dayjs.extend(utc);
 const lastModified = dayjs(entry.data.updated || entry.data.published)
@@ -114,8 +112,7 @@ const jsonLd = {
                         <Icon name="material-symbols:notes-rounded" />
                     </div>
                     <div class="text-sm">
-                        {remarkPluginFrontmatter.words}
-                        {" " + i18n(I18nKey.wordsCount)}
+                        {remarkPluginFrontmatter.words} 字
                     </div>
                 </div>
                 <div class="flex flex-row items-center">
@@ -127,15 +124,7 @@ const jsonLd = {
                         />
                     </div>
                     <div class="text-sm">
-                        {remarkPluginFrontmatter.minutes}
-                        {
-                            " " +
-                                i18n(
-                                    remarkPluginFrontmatter.minutes === 1
-                                        ? I18nKey.minuteCount
-                                        : I18nKey.minutesCount,
-                                )
-                        }
+                        {remarkPluginFrontmatter.minutes + " 分钟"}
                     </div>
                 </div>
             </div>
@@ -223,13 +212,13 @@ const jsonLd = {
             <div 
                 id="last-modified" 
                 data-last-modified={lastModified}
-                data-prefix={i18n(I18nKey.lastModifiedPrefix)}
-                data-year={i18n(I18nKey.year)}
-                data-month={i18n(I18nKey.month)}
-                data-day={i18n(I18nKey.day)}
-                data-hour={i18n(I18nKey.hour)}
-                data-minute={i18n(I18nKey.minute)}
-                data-second={i18n(I18nKey.second)}
+                data-prefix="最后更新于："
+                data-year="年"
+                data-month="月"
+                data-day="天"
+                data-hour="时"
+                data-minute="分"
+                data-second="秒"
                 style="display: none;"
             ></div>
 
@@ -298,7 +287,7 @@ const jsonLd = {
                         <div class="flex flex-col gap-0.1">
                             <div id="modifiedtime" class="text-[1.0rem] leading-tight text-black/75 dark:text-white/75"></div>
                             <p class="text-[0.8rem] leading-tight text-black/75 dark:text-white/75">
-                                {i18n(I18nKey.lastModifiedOutdated)}
+                                文章信息可能已过期
                             </p>
                         </div>
                     </div>

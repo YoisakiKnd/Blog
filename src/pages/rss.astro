@@ -3,14 +3,12 @@ import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getSortedPosts } from "@utils/content-utils";
 import { formatDateToYYYYMMDD } from "@utils/date-utils";
 import { Icon } from "astro-icon/components";
-import I18nKey from "../i18n/i18nKey";
-import { i18n } from "../i18n/translation";
 
 const posts = (await getSortedPosts()).filter((post) => !post.data.encrypted);
 const recentPosts = posts.slice(0, 6);
 ---
 
-<MainGridLayout title={i18n(I18nKey.rss)} description={i18n(I18nKey.rssDescription)}>
+<MainGridLayout title="RSS 订阅" description="订阅获取最新更新">
     <div class="onload-animation">
         <!-- RSS 标题和介绍 -->
         <div class="card-base rounded-[var(--radius-large)] p-8 mb-6">
@@ -18,9 +16,9 @@ const recentPosts = posts.slice(0, 6);
                 <div class="inline-flex items-center justify-center w-16 h-16 bg-[var(--primary)] rounded-2xl mb-4">
                     <Icon name="material-symbols:rss-feed" class="text-white text-3xl" />
                 </div>
-                <h1 class="text-3xl font-bold text-[var(--primary)] mb-3">{i18n(I18nKey.rss)}</h1>
+                <h1 class="text-3xl font-bold text-[var(--primary)] mb-3">RSS 订阅</h1>
                 <p class="text-75 max-w-2xl mx-auto">
-                    {i18n(I18nKey.rssSubtitle)}
+                    通过 RSS 订阅，第一时间获取最新文章和动态
                 </p>
             </div>
         </div>
@@ -33,8 +31,8 @@ const recentPosts = posts.slice(0, 6);
                         <Icon name="material-symbols:link" class="text-white text-xl" />
                     </div>
                     <div>
-                        <h3 class="font-semibold text-90 mb-1">{i18n(I18nKey.rssLink)}</h3>
-                        <p class="text-sm text-75">{i18n(I18nKey.rssCopyToReader)}</p>
+                        <h3 class="font-semibold text-90 mb-1">RSS 链接</h3>
+                        <p class="text-sm text-75">复制链接到你的 RSS 阅读器</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
@@ -46,7 +44,7 @@ const recentPosts = posts.slice(0, 6);
                         class="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:opacity-80 transition-all duration-200 font-medium text-sm"
                         data-url={`${Astro.site}rss.xml`}
                     >
-                        {i18n(I18nKey.rssCopyLink)}
+                        复制链接
                     </button>
                 </div>
             </div>
@@ -56,7 +54,7 @@ const recentPosts = posts.slice(0, 6);
         <div class="card-base rounded-[var(--radius-large)] p-6 mb-6">
             <h2 class="text-xl font-bold text-90 mb-4 flex items-center">
                 <Icon name="material-symbols:article" class="mr-2 text-[var(--primary)]" />
-                {i18n(I18nKey.rssLatestPosts)}
+                最新文章
             </h2>
             <div class="space-y-4">
                 {recentPosts.map((post) => (
@@ -85,20 +83,20 @@ const recentPosts = posts.slice(0, 6);
         <div class="card-base rounded-[var(--radius-large)] p-6">
             <h2 class="text-xl font-bold text-90 mb-4 flex items-center">
                 <Icon name="material-symbols:help-outline" class="mr-2 text-[var(--primary)]" />
-                {i18n(I18nKey.rssWhatIsRSS)}
+                什么是 RSS？
             </h2>
             <div class="text-75 space-y-3">
                 <p>
-                    {i18n(I18nKey.rssWhatIsRSSDescription)}
+                    RSS（Really Simple Syndication）是一种用于发布经常更新内容的标准格式。通过 RSS，你可以：
                 </p>
                 <ul class="list-disc list-inside space-y-1 ml-4">
-                    <li>{i18n(I18nKey.rssBenefit1)}</li>
-                    <li>{i18n(I18nKey.rssBenefit2)}</li>
-                    <li>{i18n(I18nKey.rssBenefit3)}</li>
-                    <li>{i18n(I18nKey.rssBenefit4)}</li>
+                    <li>及时获取网站最新内容，无需手动访问</li>
+                    <li>在一个地方管理多个网站的订阅</li>
+                    <li>避免错过重要更新和文章</li>
+                    <li>享受无广告的纯净阅读体验</li>
                 </ul>
                 <p class="text-sm">
-                    {i18n(I18nKey.rssHowToUse)}
+                    推荐使用 Feedly、Inoreader 或其他 RSS 阅读器来订阅本站。
                 </p>
             </div>
         </div>
@@ -113,8 +111,8 @@ const recentPosts = posts.slice(0, 6);
                     if (!url) return;
                     try {
                         await navigator.clipboard.writeText(url);
-                        const originalText = this.textContent || i18n.RSS.copyLink;
-                        this.textContent = i18n.RSS.copied;
+                        const originalText = this.textContent || '复制链接';
+                        this.textContent = 'RSS 链接已复制到剪贴板！';
                         this.style.backgroundColor = 'var(--success-color, #10b981)';
                         
                         setTimeout(() => {
@@ -123,8 +121,8 @@ const recentPosts = posts.slice(0, 6);
                         }, 2000);
                     } catch (err) {
                         console.error('复制失败:', err);
-                        const originalText = this.textContent || i18n.RSS.copyLink;
-                        this.textContent = i18n.RSS.copyFailed;
+                        const originalText = this.textContent || '复制链接';
+                        this.textContent = '复制失败，请手动复制链接';
                         setTimeout(() => {
                             this.textContent = originalText;
                         }, 2000);

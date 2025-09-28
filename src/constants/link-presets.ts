@@ -1,55 +1,53 @@
-import I18nKey from "@i18n/i18nKey";
-import { i18n } from "@i18n/translation";
 import { LinkPreset, type NavBarLink } from "@/types/config";
 
 export const LinkPresets: { [key in LinkPreset]: NavBarLink } = {
 	[LinkPreset.Home]: {
-		name: i18n(I18nKey.home),
+		name: "主页",
 		url: "/",
 		icon: "material-symbols:home",
 	},
 	[LinkPreset.About]: {
-		name: i18n(I18nKey.about),
+		name: "关于我们",
 		url: "/about/",
 		icon: "material-symbols:person",
 	},
 	[LinkPreset.Archive]: {
-		name: i18n(I18nKey.archive),
+		name: "归档",
 		url: "/archive/",
 		icon: "material-symbols:archive",
 	},
 	[LinkPreset.Friends]: {
-		name: i18n(I18nKey.friends),
+		name: "友链",
 		url: "/friends/",
 		icon: "material-symbols:group",
 	},
 	[LinkPreset.Anime]: {
-		name: i18n(I18nKey.anime),
+		name: "追番",
 		url: "/anime/",
 		icon: "material-symbols:movie",
 	},
 	[LinkPreset.Diary]: {
-		name: i18n(I18nKey.diary),
+		name: "日记",
 		url: "/diary/",
 		icon: "material-symbols:book",
 	},
 	[LinkPreset.Gallery]: {
-		name: i18n(I18nKey.gallery),
+		name: "相册",
 		url: "/gallery/",
 		icon: "material-symbols:photo-library",
 	},
 	[LinkPreset.Projects]: {
-		name: i18n(I18nKey.projects),
+		name: "项目展示",
 		url: "/projects/",
 		icon: "material-symbols:work",
 	},
 	[LinkPreset.Skills]: {
-		name: i18n(I18nKey.skills),
+		name: "技能展示",
 		url: "/skills/",
 		icon: "material-symbols:psychology",
 	},
 	[LinkPreset.Timeline]: {
-		name: i18n(I18nKey.timeline),
+		name: "时间线",
 		url: "/timeline/",
 		icon: "material-symbols:timeline",
 	},

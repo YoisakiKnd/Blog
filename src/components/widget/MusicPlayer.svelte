@@ -8,8 +8,7 @@ import { slide } from "svelte/transition";
 // 从配置文件中导入音乐播放器配置
 import { musicPlayerConfig } from "../../config";
 // 导入国际化相关的 Key 和 i18n 实例
-import Key from "../../i18n/i18nKey";
-import { i18n } from "../../i18n/translation";
+
 
 // 音乐播放器模式，可选 "local" 或 "meting"，从本地配置中获取或使用默认值 "meting"
 let mode = musicPlayerConfig.mode ?? "meting";
@@ -591,7 +590,7 @@ onDestroy(() => {
         <div class="playlist-panel float-panel fixed bottom-20 right-4 w-80 max-h-96 overflow-hidden z-50"
              transition:slide={{ duration: 300, axis: 'y' }}>
             <div class="playlist-header flex items-center justify-between p-4 border-b border-[var(--line-divider)]">
-                <h3 class="text-lg font-semibold text-90">{i18n(Key.playlist)}</h3>
+                <h3 class="text-lg font-semibold text-90">播放列表</h3>
                 <button class="btn-plain w-8 h-8 rounded-lg" on:click={togglePlaylist}>
                     <Icon icon="material-symbols:close" class="text-lg" />
                 </button>

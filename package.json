@@ -13,7 +13,7 @@
 		"new-post": "node scripts/new-post.js",
 		"format": "biome format --write ./src",
 		"lint": "biome check --write ./src",
-		"preinstall": "npx only-allow pnpm"
+		"preinstall": "npx only-allow bun"
 	},
 	"dependencies": {
 		"@astrojs/check": "^0.9.4",
@@ -79,5 +79,5 @@
 		"postcss-import": "^16.1.1",
 		"postcss-nesting": "^13.0.2"
 	},
-	"packageManager": "pnpm@9.14.4"
+	"packageManager": "bun@1.2.22"
 }

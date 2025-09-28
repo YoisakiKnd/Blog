@@ -1,6 +1,4 @@
 ---
-import I18nKey from "../i18n/i18nKey";
-import { i18n } from "../i18n/translation";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
 import { scanAlbums } from "../utils/album-scanner";
 
@@ -8,17 +6,17 @@ import { scanAlbums } from "../utils/album-scanner";
 const albumsData = await scanAlbums();
 ---
 
-<MainGridLayout title={i18n(I18nKey.albums)} description={i18n(I18nKey.albumsSubtitle)}>
+<MainGridLayout title="相册" description="这里记录了我的生活片段和美好回忆。">
   <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
     <div class="card-base z-10 px-9 py-6 relative w-full">
       
       <!-- 页面标题 -->
       <header class="mb-8">
         <h1 class="text-3xl font-bold text-neutral-900 dark:text-neutral-100 mb-3">
-          {i18n(I18nKey.albums)}
+          相册
         </h1>
         <p class="text-neutral-600 dark:text-neutral-400">
-          {i18n(I18nKey.albumsSubtitle)}
+          这里记录了我的生活片段和美好回忆。
         </p>
       </header>
 
@@ -54,7 +52,7 @@ const albumsData = await scanAlbums();
                 <!-- 元数据 -->
                 <div class="flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-500">
                   <div class="flex items-center gap-4">
-                    <span>{album.photos.length} {album.photos.length > 1 ? i18n(I18nKey.albumsPhotosCount) : i18n(I18nKey.albumsPhotoCount)}</span>
+                    <span>{album.photos.length} 张{album.photos.length > 1 ? "照片" : "照片"}</span>
                     {album.location && (
                       <span class="flex items-center gap-1">
                         <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -97,10 +95,10 @@ const albumsData = await scanAlbums();
             </svg>
           </div>
           <h3 class="text-lg font-medium text-neutral-900 dark:text-neutral-100 mb-2">
-            {i18n(I18nKey.albumsEmpty)}
+            暂无相册
           </h3>
           <p class="text-neutral-600 dark:text-neutral-400">
-            {i18n(I18nKey.albumsEmptyDesc)}
+            还没有创建任何相册，请稍后再来看看。
           </p>
         </div>
       )}
