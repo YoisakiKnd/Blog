@@ -1,9 +1,7 @@
-# About
-This is the demo site for [Fuwari](https://github.com/saicaca/fuwari).
+# 关于
 
-::github{repo="saicaca/fuwari"}
+你好，我是 Kanade Yoisaki。这里是个人博客，域名目标是 [hyw.mom](https://hyw.mom)。
 
-> ### Sources of images used in this site
-> - [Unsplash](https://unsplash.com/)
-> - [星と少女](https://www.pixiv.net/artworks/108916539) by [Stella](https://www.pixiv.net/users/93273965)
-> - [Rabbit - v1.4 Showcase](https://civitai.com/posts/586908) by [Rabbit_YourMajesty](https://civitai.com/user/Rabbit_YourMajesty)
+站点基于 [Fuwari](https://github.com/saicaca/fuwari) 搭建，内容还在慢慢填充。欢迎从导航里逛 Archive，或去 GitHub 看源码。
+
+::github{repo="YoisakiKnd/Blog"}
