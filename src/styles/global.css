@@ -20,6 +20,8 @@
   --radius: 12px;
   /* 顶栏高度，sticky 的元素都要避开它 */
   --topbar: 56px;
+  /* 栏目标题条的高度（18+12 的内边距 + 20px 字行高 + 1px 上边线）：侧栏吸顶要接在它下面 */
+  --headh: 66px;
 }
 
 *,
@@ -163,14 +165,19 @@ img {
   color: var(--ink-3);
 }
 
-/* 区块标题：上方一道纯黑细线，是这套版面上唯一"重"的东西
-   吸顶：滑到哪都还知道自己在哪一节。它是整幅宽的白条，侧栏卡片从下面滑过时
-   上半截会被它盖住 —— 白底不透明是故意的，不然标题字会压在卡片上；侧栏本身
-   不跟着钉（见 Sidebar.astro），只跟着页面滚 */
-/* 栏目标题条：跟着页面一起滚，不吸顶。
-   它一旦吸顶（position:sticky + 白底），左边那一栏的卡片滚上来就会被它盖掉，
-   看起来像左栏被卡住了 —— 所以这里刻意只留顶部导航条吸顶。 */
+/* 区块标题：上方一道纯黑细线，是这套版面上唯一"重"的东西。
+   吸顶，钉在顶栏正下方（滑到哪都还知道自己在哪一节）。
+
+   它整幅宽压下来的话，左栏卡片滚上来必然被切掉半张（左栏六百多像素高，
+   只要列表快到底，左边就一定会从它下面钻过去）；所以白底和那道黑线只压
+   正文那一列（margin-left = 左栏宽 + 列间距），左栏那一整列是空的 ——
+   左栏同时独立吸顶（见 Sidebar.astro 的 .side），两边谁也不压谁。 */
 .section-head {
+  position: sticky;
+  top: var(--topbar);
+  z-index: 10;
+  background: var(--paper);
+  margin-left: calc(260px + 56px);
   display: flex;
   align-items: baseline;
   justify-content: space-between;
@@ -189,6 +196,39 @@ img {
   font-size: 13px;
   color: var(--ink-3);
   font-variant-numeric: tabular-nums;
+}
+
+/* 笔记区网格：左栏 260px + 正文列。标题条只压正文那一列、又留在文档流里，
+   所以把网格上提一个标题条的高度 —— 左栏第一张卡片就与「笔记」齐平，
+   正文列用 padding 让开标题条；吸顶时两边互不干涉。 */
+.notes-grid {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 56px;
+  margin-top: calc(-1 * var(--headh));
+  align-items: start;
+}
+
+/* 正文列至少占满一屏，给吸顶的左栏留出行程：
+   左栏六百多像素高，正文列比它矮的话，左栏钉住的余量几乎是 0，看着就像没钉。 */
+.notes-main {
+  min-height: calc(100vh - var(--topbar) - var(--headh) - 28px);
+  padding-top: calc(var(--headh) + 14px);
+}
+
+@media (max-width: 900px) {
+  .section-head {
+    margin-left: 0;
+  }
+  .notes-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+    margin-top: 14px;
+  }
+  .notes-main {
+    min-height: 0;
+    padding-top: 0;
+  }
 }
 
 /* 卡片 / 灰框 */

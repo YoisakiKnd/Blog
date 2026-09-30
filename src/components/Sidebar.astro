@@ -60,12 +60,27 @@ const tags = countTags(posts);
 </aside>
 
 <style>
-  /* 侧栏不钉住。钉住的话它六百多像素高，只要窗口不够高，滚到页面最末尾时
-     容器底会把它整个顶上去 —— 站点卡会被标题条切掉半张，怎么滚都回不来。
-     跟着滚动的是上面那条标题条，它负责让你知道自己在哪一节。 */
+  /* 侧栏跟着滚动一直可见：钉在标题条正下方（--topbar + --headh + 网格的上边距）。
+     它六百多像素高，窗口太矮时靠 max-height 让它在自己内部滚，保证始终完整可见；
+     单列布局（窄屏）下左栏本来就在正文前面，不再吸顶。 */
   .side {
     align-self: start;
     font-size: 14px;
+    position: sticky;
+    top: calc(var(--topbar) + var(--headh) + 14px);
+    max-height: calc(100vh - var(--topbar) - var(--headh) - 28px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line) transparent;
+  }
+
+  @media (max-width: 900px) {
+    .side {
+      position: static;
+      max-height: none;
+      overflow: visible;
+    }
   }
 
   .site {

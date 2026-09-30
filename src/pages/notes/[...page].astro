@@ -46,21 +46,10 @@ const all = await getPosts();
     padding-top: 56px;
   }
 
-  .notes-grid {
-    display: grid;
-    grid-template-columns: 260px minmax(0, 1fr);
-    gap: 56px;
-    margin-top: 14px;
-    align-items: start;
-  }
-
+  /* 网格、左栏吸顶、标题条这些版式都在 global.css 里，这里只管本页的间距 */
   @media (max-width: 900px) {
     .archive {
       padding-top: 40px;
-    }
-    .notes-grid {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 32px;
     }
   }
 </style>
