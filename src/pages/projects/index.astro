@@ -1,0 +1,33 @@
+---
+import Base from '../../layouts/Base.astro';
+import { projects, site } from '../../site.config';
+---
+
+<Base title="项目" description={`${site.name} 自己写的小东西。`}>
+  <div class="wrap page">
+    <header class="section-head">
+      <h1>项目</h1>
+      <span class="count">共 {projects.length} 个</span>
+    </header>
+
+    <div class="page-main">
+      {projects.length === 0 ? (
+        <p class="empty">这一页还空着。写点东西放在 <code>site.config.ts</code> 的 <code>projects</code> 里就会长出来。</p>
+      ) : (
+        <ul class="rows">
+          {projects.map((p) => (
+            <li>
+              <a class="row" href={p.href}>
+                <span>
+                  <span class="name">{p.name}</span>
+                  <span class="desc">{p.desc}</span>
+                </span>
+                <span class="note">{p.status}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </div>
+</Base>

@@ -1,0 +1,50 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getPosts, siteStats } from '../../lib/posts';
+import { site } from '../../site.config';
+
+const posts = await getPosts();
+const s = siteStats(posts);
+const max = Math.max(...s.grouped.map((g) => g.posts.length), 1);
+const rows: [string, string][] = [
+  ['笔记', `${s.posts} 篇`],
+  ['总字数', `${s.words.toLocaleString('en-US')} 字`],
+  ['平均每篇', `${s.avg.toLocaleString('en-US')} 字`],
+  ['分类 / 标签', `${s.categories} / ${s.tags}`],
+  ['写过的月份', `${s.months} 个`],
+  ['今年写的', `${s.thisYear} 篇`],
+  ['写得最多的月份', s.busiest],
+  ['第一篇 / 最近一篇', `${s.first} — ${s.latest}`],
+];
+---
+
+<Base title="统计" description={`${site.name} 的笔记数据。`}>
+  <div class="wrap page">
+    <header class="section-head">
+      <h1>统计</h1>
+      <span class="count">构建时算好，页面上没有脚本</span>
+    </header>
+
+    <div class="page-main">
+      <ul class="ledger">
+        {rows.map(([k, v]) => (
+          <li>
+            <span class="k">{k}</span>
+            <span class="v">{v}</span>
+          </li>
+        ))}
+      </ul>
+
+      <h2 class="blk">按月分布</h2>
+      <ul class="bars">
+        {s.grouped.map((g) => (
+          <li>
+            <span class="m">{g.label.replace(' 年 ', '-').replace(' 月', '')}</span>
+            <span class="bar" style={`width: ${Math.round((g.posts.length / max) * 100)}%`}></span>
+            <span class="n">{g.posts.length}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</Base>

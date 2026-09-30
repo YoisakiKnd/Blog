@@ -1,0 +1,35 @@
+---
+import Base from '../../layouts/Base.astro';
+import { gear, site } from '../../site.config';
+---
+
+<Base title="装备" description={`${site.name} 平时用的东西。`}>
+  <div class="wrap page">
+    <header class="section-head">
+      <h1>装备</h1>
+      <span class="count">共 {gear.reduce((n, g) => n + g.items.length, 0)} 件</span>
+    </header>
+
+    <div class="page-main">
+      {gear.length === 0 ? (
+        <p class="empty">还没开始写。哪天把机器和工具列一遍再放上来。</p>
+      ) : (
+        gear.map((g) => (
+          <section class="arch-group">
+            <h2 class="arch-month">{g.group}</h2>
+            <ul class="rows">
+              {g.items.map((it) => (
+                <li>
+                  <span class="row">
+                    <span class="name">{it.name}</span>
+                    {it.note && <span class="note">{it.note}</span>}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      )}
+    </div>
+  </div>
+</Base>

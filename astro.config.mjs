@@ -16,6 +16,7 @@ export default defineConfig({
   markdown: {
     // 代码高亮用浅色主题，配合黑白版面
     shikiConfig: { theme: 'github-light', wrap: true },
+    rehypePlugins: ['./src/lib/rehype-heading-ids.mjs'],
   },
   integrations: [sitemap()],
 });

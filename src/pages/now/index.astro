@@ -1,0 +1,26 @@
+---
+import Base from '../../layouts/Base.astro';
+import { doing, now, site } from '../../site.config';
+---
+
+<Base title="现在" description={`${site.name} 此刻在做的事。`}>
+  <div class="wrap page">
+    <header class="section-head">
+      <h1>现在</h1>
+      <span class="count">更新于 {now.updated}</span>
+    </header>
+
+    <div class="page-main">
+      <ul class="ledger">
+        {doing.map((d) => (
+          <li>
+            <span class="k">{d}</span>
+          </li>
+        ))}
+      </ul>
+      <p class="aside-note">
+        这一页只写正在做的，做完就撤掉；所以它比别处更新得勤，也更容易过时。
+      </p>
+    </div>
+  </div>
+</Base>

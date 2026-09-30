@@ -1,0 +1,32 @@
+---
+import Base from '../../layouts/Base.astro';
+import { friends, site } from '../../site.config';
+---
+
+<Base title="友链" description={`${site.name} 的友链。`}>
+  <div class="wrap page">
+    <header class="section-head">
+      <h1>友链</h1>
+      <span class="count">共 {friends.length} 个</span>
+    </header>
+
+    <div class="page-main">
+      {friends.length === 0 ? (
+        <p class="empty">还一个都没放。想换友链的话，去 <a href={site.github}>GitHub</a> 找我。</p>
+      ) : (
+        <ul class="rows">
+          {friends.map((f) => (
+            <li>
+              <a class="row" href={f.href}>
+                <span>
+                  <span class="name">{f.name}</span>
+                  {f.desc && <span class="desc">{f.desc}</span>}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </div>
+</Base>

@@ -136,6 +136,24 @@ img {
   text-underline-offset: 4px;
 }
 
+/* 页脚上的那排小导航：关于 / 现在 / 统计 / 友链 / 装备 / 书架 */
+.footnav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px;
+  margin-bottom: 14px;
+  font-size: 13px;
+}
+.footnav a {
+  color: var(--ink-2);
+}
+.footnav a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
 /* 页脚。上面这段留白刻意收得比较紧：左栏吸顶能不能钉到页面最后一屏，
    取决于网格下面还剩多少高度（页脚越高，左栏越早被自己的容器顶出去、
    从标题条底下滑过去）。 */
@@ -183,6 +201,7 @@ img {
   padding: 18px 0 12px;
   border-top: 1px solid var(--ink);
 }
+.section-head h1,
 .section-head h2 {
   margin: 0;
   font-family: var(--serif);
@@ -416,4 +435,175 @@ a.chip:hover .n {
   border-bottom: 1px solid var(--line);
   padding: 8px 10px;
   text-align: left;
+}
+/* ---- 独立页（归档 / 项目 / 现在 / 关于 / 统计 / 友链 / 装备 / 书架）---- */
+
+.page {
+  padding-bottom: 64px;
+}
+.page-main {
+  margin-top: 14px;
+}
+/* 关于页那种两栏：窄屏自动叠成一栏 */
+.two-col {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 28px 48px;
+}
+.blk {
+  margin: 26px 0 10px;
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.two-col .blk:first-child {
+  margin-top: 0;
+}
+
+/* 账本式行：左边灰标签、右边数字，行间一条细线 */
+.ledger {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ledger li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 2px;
+  border-bottom: 1px solid #e8e8e8;
+  font-size: 14px;
+}
+.ledger .k {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-3);
+}
+.ledger .v {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 归档：月份 + 日期 + 标题 */
+.arch-group + .arch-group {
+  margin-top: 26px;
+}
+.arch-month {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.arch-list,
+.rows,
+.bars {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.arch-list li + li,
+.rows li + li {
+  border-top: 1px solid #e8e8e8;
+}
+.arch-row {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 9px 2px;
+}
+.arch-row time {
+  flex: none;
+  width: 62px;
+  font-size: 13px;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.arch-row:hover span {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* 项目 / 友链 / 装备 / 书架的一行：名称 + 说明，右边灰色小字 */
+.row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 11px 2px;
+}
+.row .name {
+  font-family: var(--serif);
+  font-size: 15.5px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+.row .desc {
+  display: block;
+  margin-top: 4px;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--ink-2);
+}
+.row .note {
+  flex: none;
+  font-size: 12.5px;
+  color: var(--ink-3);
+}
+a.row:hover .name,
+a.row:hover .desc {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* 统计页的按月分布：细黑条 */
+.bars li {
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr) 30px;
+  align-items: center;
+  gap: 12px;
+  padding: 5px 2px;
+  font-size: 13px;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.bars .bar {
+  height: 6px;
+  min-width: 3px;
+  background: var(--ink);
+  border-radius: 3px;
+}
+.bars .n {
+  text-align: right;
+}
+
+/* 空状态。正文里的 code 现在只在空状态里出现 */
+.empty {
+  margin: 0;
+  padding: 22px 2px;
+  font-size: 14.5px;
+  color: var(--ink-2);
+}
+.empty code {
+  padding: 1px 5px;
+  background: var(--fill);
+  border-radius: 4px;
+  font-size: 13px;
+}
+.aside-note {
+  margin: 22px 0 0;
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--ink-3);
+}
+.aside-note a {
+  color: var(--ink-2);
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }

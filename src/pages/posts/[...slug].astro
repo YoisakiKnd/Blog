@@ -2,72 +2,151 @@
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
-import { getPosts, formatDate, type Post } from '../../lib/posts';
+import {
+  getPosts,
+  formatDate,
+  wordCount,
+  readingMinutes,
+  relatedPosts,
+  seriesPosts,
+  type Post,
+} from '../../lib/posts';
 
 export async function getStaticPaths() {
   const posts = await getPosts();
-  return posts.map((post, i) => ({
-    params: { slug: post.id },
-    props: { post, newer: posts[i - 1], older: posts[i + 1] },
-  }));
+  return posts.map((post, i) => {
+    // 系列里就按系列前后走，不在系列里就按全站时间线走
+    const series = seriesPosts(post, posts);
+    const si = series.findIndex((p) => p.id === post.id);
+    return {
+      params: { slug: post.id },
+      props: {
+        post,
+        newer: series.length > 1 ? series[si + 1] : posts[i - 1],
+        older: series.length > 1 ? series[si - 1] : posts[i + 1],
+        series,
+        related: relatedPosts(post, posts),
+      },
+    };
+  });
 }
 
 interface Props {
   post: Post;
   newer?: Post;
   older?: Post;
+  series?: Post[];
+  related?: Post[];
 }
 
-const { post, newer, older } = Astro.props;
-const { Content } = await render(post);
+const { post, newer, older, series = [], related = [] } = Astro.props;
+const { Content, headings } = await render(post);
+const chars = wordCount(post);
+const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
 ---
 
 <Base title={post.data.title} description={post.data.description}>
   <article class="post">
-    <div class="wrap-narrow">
-      <a class="back" href="/notes/">
-        <Icon name="pen" size={14} />
-        笔记
-      </a>
-
-      <header class="head">
-        <p class="meta">
-          <span class="cat">{post.data.category}</span>
-          <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
-        </p>
-        <h1>{post.data.title}</h1>
-        <p class="desc">{post.data.description}</p>
-        {post.data.tags.length > 0 && (
-          <ul class="chips">
-            {post.data.tags.map((t) => (
-              <li class="chip">{t}</li>
-            ))}
-          </ul>
-        )}
-      </header>
-
-      <div class="prose">
-        <Content />
+    <div class="wrap">
+      <div class="pgtop">
+        <a class="back" href="/notes/">
+          <Icon name="pen" size={14} />
+          笔记
+        </a>
       </div>
 
-      <nav class="siblings" aria-label="相邻文章">
-        <div>
-          {newer && (
-            <a href={`/posts/${newer.id}/`}>
-              <span class="label">更新的</span>
-              <span class="title">{newer.data.title}</span>
-            </a>
+      <div class="post-grid">
+        <div class="post-main">
+          <header class="head">
+            <p class="meta">
+              <span class="cat">{post.data.category}</span>
+              <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+              {chars > 0 && <span class="len">约 {chars} 字，读 {readingMinutes(chars)} 分钟</span>}
+            </p>
+            <h1>{post.data.title}</h1>
+            <p class="desc">{post.data.description}</p>
+            {post.data.tags.length > 0 && (
+              <ul class="chips">
+                {post.data.tags.map((t) => (
+                  <li>
+                    <a class="chip" href={`/tags/${t}/`}>
+                      {t}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </header>
+
+          <div class="prose">
+            <Content />
+          </div>
+
+          {series.length > 1 && (
+            <section class="block">
+              <h2 class="block-title">「{post.data.series}」系列</h2>
+              <ul class="rows">
+                {series.map((p) => (
+                  <li>
+                    <a class="row" href={`/posts/${p.id}/`} aria-current={p.id === post.id ? 'page' : undefined}>
+                      <span class="name">{p.data.title}</span>
+                      <span class="note">{p.id === post.id ? '本篇' : formatDate(p.data.pubDate)}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </section>
           )}
-        </div>
-        <div class="right">
-          {older && (
-            <a href={`/posts/${older.id}/`}>
-              <span class="label">更早的</span>
-              <span class="title">{older.data.title}</span>
-            </a>
+
+          {related.length > 0 && (
+            <section class="block">
+              <h2 class="block-title">相关</h2>
+              <ul class="rows">
+                {related.map((p) => (
+                  <li>
+                    <a class="row" href={`/posts/${p.id}/`}>
+                      <span class="name">{p.data.title}</span>
+                      <span class="note">{p.data.category}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </section>
           )}
+
+          <nav class="siblings" aria-label="相邻文章">
+            <div>
+              {newer && (
+                <a href={`/posts/${newer.id}/`}>
+                  <span class="label">更新的</span>
+                  <span class="title">{newer.data.title}</span>
+                </a>
+              )}
+            </div>
+            <div class="right">
+              {older && (
+                <a href={`/posts/${older.id}/`}>
+                  <span class="label">更早的</span>
+                  <span class="title">{older.data.title}</span>
+                </a>
+              )}
+            </div>
+          </nav>
         </div>
-      </nav>
+
+        {toc.length > 1 && (
+          <aside class="toc" aria-label="目录">
+            <p class="toc-title">目录</p>
+            <ul>
+              {toc.map((h) => (
+                <li class={h.depth === 3 ? 'sub' : undefined}>
+                  <a href={`#${h.slug}`}>{h.text}</a>
+                </li>
+              ))}
+            </ul>
+          </aside>
+        )}
+      </div>
     </div>
   </article>
 </Base>
@@ -77,11 +156,9 @@ const { Content } = await render(post);
     padding: 40px 0 0;
   }
 
-  .wrap-narrow {
-    width: 100%;
-    max-width: 720px;
+  .pgtop {
+    max-width: 968px;
     margin: 0 auto;
-    padding: 0 24px;
   }
 
   .back {
@@ -95,6 +172,15 @@ const { Content } = await render(post);
     color: var(--ink);
   }
 
+  /* 正文列 720px 居中，右侧留给目录；窄屏折成一栏并把目录收起来 */
+  .post-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 200px;
+    gap: 48px;
+    max-width: 968px;
+    margin: 0 auto;
+  }
+
   .head {
     margin-top: 26px;
     padding-bottom: 26px;
@@ -103,7 +189,8 @@ const { Content } = await render(post);
 
   .meta {
     display: flex;
-    align-items: center;
+    flex-wrap: wrap;
+    align-items: baseline;
     gap: 10px;
     margin: 0;
     font-size: 12.5px;
@@ -114,7 +201,8 @@ const { Content } = await render(post);
     border-bottom: 1px solid var(--ink-3);
     padding-bottom: 1px;
   }
-  .meta time {
+  .meta time,
+  .len {
     color: var(--ink-3);
   }
 
@@ -141,12 +229,84 @@ const { Content } = await render(post);
   .prose {
     padding-top: 30px;
   }
+  /* Astro 给 h2/h3 生成的 id 是锚点，那个 # 是构建时挂上去的（见 astro.config.mjs） */
+  .prose :global(.anchor)::before {
+    content: '#';
+  }
+  .prose :global(.anchor) {
+    margin-left: 8px;
+    font-size: 0.8em;
+    color: var(--ink-3);
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+  .prose :global(h2:hover .anchor),
+  .prose :global(h3:hover .anchor) {
+    opacity: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .prose :global(.anchor) {
+      transition: none;
+    }
+  }
+
+  .block {
+    margin-top: 56px;
+  }
+  .block-title {
+    margin: 0 0 4px;
+    font-family: var(--serif);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--ink-3);
+  }
+  .rows {
+    margin-top: 4px;
+  }
+
+  .toc {
+    position: sticky;
+    top: calc(var(--topbar) + 26px);
+    align-self: start;
+    margin-top: 30px;
+    font-size: 12.5px;
+    line-height: 1.75;
+  }
+  .toc-title {
+    margin: 0 0 8px;
+    font-family: var(--serif);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--ink-3);
+  }
+  .toc ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-left: 1px solid var(--line);
+  }
+  .toc li {
+    padding: 3px 0 3px 12px;
+  }
+  .toc li.sub {
+    padding-left: 24px;
+  }
+  .toc a {
+    color: var(--ink-2);
+  }
+  .toc a:hover {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
 
   .siblings {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
-    margin-top: 64px;
+    margin-top: 56px;
     padding-top: 22px;
     border-top: 1px solid var(--line);
   }
@@ -173,6 +333,15 @@ const { Content } = await render(post);
     color: var(--ink);
     text-decoration: underline;
     text-underline-offset: 4px;
+  }
+
+  @media (max-width: 1020px) {
+    .post-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .toc {
+      display: none;
+    }
   }
 
   @media (max-width: 560px) {

@@ -1,0 +1,35 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getPosts, formatDate, groupByMonth } from '../../lib/posts';
+import { site } from '../../site.config';
+
+const posts = await getPosts();
+const groups = groupByMonth(posts);
+---
+
+<Base title="归档" description={`${site.name} 的全部笔记，按年月排开。`}>
+  <div class="wrap page">
+    <header class="section-head">
+      <h1>归档</h1>
+      <span class="count">共 {posts.length} 篇</span>
+    </header>
+
+    <div class="page-main">
+      {groups.map((g) => (
+        <section class="arch-group">
+          <h2 class="arch-month">{g.label}</h2>
+          <ul class="arch-list">
+            {g.posts.map((p) => (
+              <li>
+                <a class="arch-row" href={`/posts/${p.id}/`}>
+                  <time datetime={p.data.pubDate.toISOString()}>{formatDate(p.data.pubDate).slice(5)}</time>
+                  <span>{p.data.title}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+  </div>
+</Base>

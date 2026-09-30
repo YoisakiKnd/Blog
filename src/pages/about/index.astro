@@ -1,0 +1,50 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import { facts, doing, links, site } from '../../site.config';
+---
+
+<Base title="关于" description={`关于 ${site.name} 和这个站。`}>
+  <div class="wrap page">
+    <header class="section-head">
+      <h1>关于</h1>
+      <span class="count">{site.handle}</span>
+    </header>
+
+    <div class="page-main two-col">
+      <section>
+        <h2 class="blk">关于我</h2>
+        <p>{site.tagline}。</p>
+        <ul class="ledger">
+          {facts.map((f) => (
+            <li>
+              <span class="k"><Icon name={f.icon} size={14} /> {f.text}</span>
+              <span class="v"></span>
+            </li>
+          ))}
+        </ul>
+        <p class="aside-note">
+          想聊两句或者换友链，去 <a href={site.github}>GitHub</a> 找我，别的联系方式暂时都撤了。
+        </p>
+      </section>
+
+      <section>
+        <h2 class="blk">关于本站</h2>
+        <p>
+          用 <a href="https://astro.build">Astro</a> 手写，没有主题、没有框架、没有客户端 JS，
+          整站只有一份共用的 CSS 和系统字体，所以打开就是内容。笔记集中在 <a href="/archive/">归档</a> 里，
+          订阅走 <a href="/rss.xml">RSS</a>。
+        </p>
+        <ul class="ledger">
+          <li><span class="k">生成方式</span><span class="v">Astro 5 · 纯静态</span></li>
+          <li><span class="k">客户端 JavaScript</span><span class="v">0</span></li>
+          <li><span class="k">字体</span><span class="v">系统字体，无 webfont</span></li>
+          <li><span class="k">托管</span><span class="v">Cloudflare</span></li>
+        </ul>
+        <p class="aside-note">
+          本站说明的具体版本和体积会写在仓库的 README 里，这一页只说不变的那几条。
+        </p>
+      </section>
+    </div>
+  </div>
+</Base>

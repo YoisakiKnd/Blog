@@ -1,0 +1,37 @@
+---
+import Base from '../../layouts/Base.astro';
+import { shelf, site } from '../../site.config';
+---
+
+<Base title="书架" description={`${site.name} 在读和在读过的书。`}>
+  <div class="wrap page">
+    <header class="section-head">
+      <h1>书架</h1>
+      <span class="count">共 {shelf.length} 本</span>
+    </header>
+
+    <div class="page-main">
+      {shelf.length === 0 ? (
+        <p class="empty">
+          书架还空着。已经写过的读书笔记在 <a href="/categories/读书/">读书</a> 这个分类里。
+        </p>
+      ) : (
+        <ul class="rows">
+          {shelf.map((b) => (
+            <li>
+              <span class="row">
+                <span>
+                  <span class="name">{b.title}</span>
+                  <span class="desc">
+                    {b.author && `${b.author}　`}{b.note ?? ''}
+                  </span>
+                </span>
+                <span class="note">{b.state}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </div>
+</Base>

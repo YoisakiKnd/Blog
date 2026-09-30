@@ -101,3 +101,26 @@ export const assets = {
   /** 底部那条波浪。原图自带一行白字，压在浅色渐变上几乎看不见，所以这里不带 text 参数，文字用页面上的真字 */
   wave: 'https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=12,14,20&height=100&section=footer',
 };
+/**
+ * 项目页。desc 一句话，status 右对齐显示成小灰字。
+ * 现在这两条是从示例文章「用 Rust 写了两个自己每天都会用的小工具」里抄来的，
+ * 换成你自己的项目即可（href 现在都指向你的 GitHub）。
+ */
+export const projects = [
+  { name: 'clip-time', desc: '把剪贴板里的时间戳转成人能读的时间', href: site.github, status: '在用' },
+  { name: 'rename-photos', desc: '按拍摄时间批量重命名照片', href: site.github, status: '在用' },
+];
+
+/** 现在页：正在做的事复用 doing，这里只放一个「最后更新」的日期 */
+export const now = {
+  updated: '2026-09-30',
+};
+
+/** 友链。填一条就多一行；空着时页面显示空状态 */
+export const friends: { name: string; href: string; desc?: string }[] = [];
+
+/** 装备页。group 是一组，items 里的 note 显示成右对齐的小灰字 */
+export const gear: { group: string; items: { name: string; note?: string }[] }[] = [];
+
+/** 书架。state 用「在读」或「读完」 */
+export const shelf: { title: string; author?: string; note?: string; state: string }[] = [];

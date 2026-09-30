@@ -10,6 +10,8 @@ const posts = defineCollection({
     category: z.string().default('日常'),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
+    /** 系列名。同一系列的文章会自动串起来，留空就不参与 */
+    series: z.string().optional(),
   }),
 });
 
