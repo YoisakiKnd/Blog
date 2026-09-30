@@ -1,0 +1,66 @@
+---
+import type { Page } from 'astro';
+import Base from '../../layouts/Base.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import PostList from '../../components/PostList.astro';
+import Pager from '../../components/Pager.astro';
+import { getPosts, type Post } from '../../lib/posts';
+import { site } from '../../site.config';
+
+export async function getStaticPaths({ paginate }: { paginate: Function }) {
+  const posts = await getPosts();
+  return paginate(posts, { pageSize: site.perPage });
+}
+
+const { page } = Astro.props as { page: Page<Post> };
+const all = await getPosts();
+---
+
+<Base title="笔记" description={`${site.name}的全部笔记。`}>
+  <section class="archive">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>笔记</h2>
+        <span class="count">共 {all.length} 篇</span>
+      </div>
+
+      <div class="notes-grid">
+        <Sidebar posts={all} />
+        <div>
+          <PostList posts={page.data} />
+          <Pager
+            current={page.currentPage}
+            total={page.lastPage}
+            prev={page.url.prev}
+            next={page.url.next}
+            base="/notes/"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .archive {
+    padding-top: 56px;
+  }
+
+  .notes-grid {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 56px;
+    margin-top: 14px;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .archive {
+      padding-top: 40px;
+    }
+    .notes-grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 32px;
+    }
+  }
+</style>

@@ -1,0 +1,345 @@
+---
+import Icon from './Icon.astro';
+import { site, links, facts, doing, stack, assets } from '../site.config';
+
+const badge = (s: { name: string; color: string; logo: string; logoColor: string }) =>
+  `https://img.shields.io/badge/${encodeURIComponent(s.name)}-${s.color}?style=flat-square&logo=${s.logo}&logoColor=${s.logoColor}`;
+---
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <!-- 左栏：身份、联系方式、正在做的事 -->
+    <aside class="who">
+      <img class="avatar" src={site.avatar} alt={`${site.name} 的头像`} width="120" height="120" />
+
+      <h1 class="name">{site.name}</h1>
+      <p class="handle">{site.handle}</p>
+
+      <ul class="facts">
+        {facts.map((f) => (
+          <li>
+            <Icon name={f.icon as any} size={15} />
+            {f.href ? <a href={f.href}>{f.text}</a> : <span>{f.text}</span>}
+          </li>
+        ))}
+      </ul>
+
+      <div class="group">
+        <h2 class="sub">正在做的事</h2>
+        <ul class="todo">
+          {doing.map((d) => (
+            <li>{d}</li>
+          ))}
+        </ul>
+      </div>
+    </aside>
+
+    <!-- 右栏：一个 README 框，顺序照着 GitHub 上的 README 来 -->
+    <div class="readme">
+      <div class="rm-head">
+        <span class="path">
+          {site.repo}
+          <span class="slash">/</span>
+          {site.readme}
+        </span>
+        <span class="rm-edit" aria-hidden="true">
+          <Icon name="pencil" size={15} />
+        </span>
+      </div>
+
+      <div class="rm-body">
+        <h2 class="rm-title">{site.handle}</h2>
+        <p class="rm-tagline">{site.tagline}</p>
+
+        <p class="links">
+          {links.map((l, i) => (
+            <>
+              {i > 0 && <span class="dot">·</span>}
+              <a href={l.href}>{l.label}</a>
+            </>
+          ))}
+        </p>
+
+        <div class="stack">
+          {stack.map((row) => (
+            <p class="badges">
+              {row.map((s) => (
+                <img src={badge(s)} alt={s.name} height="20" />
+              ))}
+            </p>
+          ))}
+        </div>
+
+        <div class="cards">
+          {assets.stats.map((c) => (
+            <img src={c.src} alt={c.alt} width="495" height="195" loading="lazy" decoding="async" />
+          ))}
+        </div>
+      </div>
+
+      <div class="signoff">
+        <span>{site.signoff}</span>
+        <img class="wave" src={assets.wave} alt="" loading="lazy" decoding="async" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding: 60px 0 40px;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 72px;
+    align-items: start;
+  }
+
+  /* 左栏 ---------------------------------------------------------- */
+  .avatar {
+    display: block;
+    width: 120px;
+    height: 120px;
+    margin: 0 0 22px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: var(--fill);
+    object-fit: cover;
+  }
+
+  .name {
+    margin: 0;
+    font-family: var(--serif);
+    font-size: 27px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    line-height: 1.3;
+  }
+
+  .handle {
+    margin: 6px 0 0;
+    font-size: 14px;
+    color: var(--ink-3);
+    letter-spacing: 0.01em;
+  }
+
+  .facts {
+    margin: 22px 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 13.5px;
+    color: var(--ink-2);
+  }
+  .facts li {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 26px;
+  }
+  .facts :global(svg) {
+    color: var(--ink-3);
+    flex: none;
+  }
+  .facts a:hover {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .group {
+    margin-top: 34px;
+  }
+
+  .sub {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .todo {
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 13.5px;
+    color: var(--ink-2);
+  }
+  .todo li {
+    padding: 7px 0 7px 14px;
+    border-top: 1px solid var(--line);
+    position: relative;
+  }
+  .todo li:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+  .todo li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 1.05em;
+    width: 6px;
+    height: 1px;
+    background: var(--ink-3);
+  }
+
+  /* 右栏：README 框 ------------------------------------------------ */
+  .readme {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--paper);
+    overflow: hidden;
+  }
+
+  .rm-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px 10px 16px;
+    background: var(--fill);
+    border-bottom: 1px solid var(--line);
+  }
+  .path {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12.5px;
+    letter-spacing: 0.01em;
+  }
+  .path .slash {
+    margin: 0 3px;
+    color: var(--ink-3);
+  }
+  .rm-edit {
+    display: inline-flex;
+    color: var(--ink-3);
+  }
+
+  .rm-body {
+    --pad: 28px;
+    padding: 28px var(--pad) 0;
+    text-align: center;
+  }
+
+  .rm-title {
+    margin: 0;
+    font-family: var(--serif);
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    line-height: 1.4;
+  }
+
+  .rm-tagline {
+    margin: 8px 0 0;
+    font-size: 14px;
+    color: var(--ink-2);
+    letter-spacing: 0.01em;
+  }
+
+  .links {
+    margin: 14px 0 0;
+    font-size: 14px;
+  }
+  .links a {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 1px;
+    text-decoration-color: var(--ink-3);
+    transition: text-decoration-color 0.16s ease;
+  }
+  .links a:hover {
+    text-decoration-color: var(--ink);
+  }
+  .links .dot {
+    margin: 0 9px;
+    color: var(--line);
+  }
+
+  /* 徽章墙：图是外面 shields.io 给的，这里只管排 */
+  .stack {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 22px;
+  }
+  .badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+    margin: 0;
+  }
+  .badges img {
+    display: block;
+    height: 20px;
+    width: auto;
+  }
+
+  /* 两张数据卡，宽度比例照 GitHub 那边 45% / 47.53% 来 */
+  .cards {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 24px;
+  }
+  .cards img {
+    display: block;
+    width: 45%;
+    max-width: 100%;
+    height: auto;
+  }
+  .cards img:nth-child(2) {
+    width: 47.5%;
+  }
+
+  /* 底部：一句真字 + 那条波浪图，波浪只露出下半截，别拖出一条空白带 */
+  .signoff {
+    margin-top: 26px;
+    text-align: center;
+  }
+  .signoff span {
+    font-family: var(--serif);
+    font-size: 14px;
+    letter-spacing: 0.22em;
+    text-indent: 0.22em;
+    color: var(--ink-2);
+  }
+  .wave {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-top: 6px;
+  }
+
+  @media (max-width: 900px) {
+    .hero-grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 44px;
+    }
+    .rm-body {
+      --pad: 20px;
+      padding: 22px var(--pad) 0;
+    }
+    .rm-title {
+      font-size: 23px;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .cards {
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .cards img,
+    .cards img:nth-child(2) {
+      width: 100%;
+    }
+    .badges img {
+      height: 18px;
+    }
+  }
+</style>

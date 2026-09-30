@@ -1,0 +1,64 @@
+---
+import '../styles/global.css';
+import Icon from '../components/Icon.astro';
+import { site } from '../site.config';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description = site.description } = Astro.props;
+const pageTitle = title ? `${title} · ${site.name}` : `${site.name} · ${site.tagline}`;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url);
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical.href} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title={site.name} href="/rss.xml" />
+    <meta name="generator" content={Astro.generator} />
+  </head>
+
+  <body>
+    <a class="skip" href="#main">跳到正文</a>
+
+    <header class="topbar">
+      <div class="wrap topbar-in">
+        <a class="brand" href="/">
+          <Icon name="bell" size={17} />
+          {site.name}
+        </a>
+        <nav class="topnav">
+          <a href="/">主页</a>
+          <a href="/notes/">笔记</a>
+          <a href="/rss.xml">RSS</a>
+          <a href={site.github}>GitHub</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="footer">
+      <div class="wrap">
+        <p>
+          © {new Date().getFullYear()} {site.name}. All Rights Reserved.
+          <span class="sep">/</span>
+          <a href="/rss.xml">RSS</a>
+          <span class="sep">/</span>
+          <a href="/sitemap-index.xml">Sitemap</a>
+        </p>
+        <p>Powered by <a href="https://astro.build">Astro</a></p>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,367 @@
+/* 天音铃 · 极简黑白
+   整套颜色只有六个值：纯白纸面、纯黑墨色、两级灰字、一道浅灰线、一块浅灰底。
+   没有任何强调色 —— 层次全部交给字号、字重、字距和那一道黑线。 */
+:root {
+  --paper: #ffffff;
+  --ink: #000000;
+  --ink-2: #4a4a4a;
+  --ink-3: #757575; /* 灰字，白底对比度 4.6:1，够 AA */
+  --line: #e4e4e4;
+  --fill: #f4f4f4;
+
+  /* 零 webfont：中文系统字体，标题用宋体（笔记的气质），正文用黑体 */
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC",
+    "Source Han Sans SC", sans-serif;
+  --serif: "Songti SC", "Source Han Serif SC", "Noto Serif CJK SC", "SimSun",
+    Georgia, "Times New Roman", serif;
+
+  --page: 1080px;
+  --radius: 12px;
+  /* 顶栏高度，sticky 的元素都要避开它 */
+  --topbar: 56px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* 版面框架 ------------------------------------------------------------- */
+
+.wrap {
+  width: 100%;
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  padding: 8px 14px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 13px;
+  z-index: 40;
+}
+.skip:focus {
+  left: 12px;
+  top: 8px;
+}
+
+/* 站内锚点落到顶栏下面，别被顶栏压住 */
+#main,
+#notes {
+  scroll-margin-top: var(--topbar);
+}
+
+/* 顶栏：一条细线，一个宋体字标，两个灰链接 */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+.topbar-in {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: var(--topbar);
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--serif);
+  font-size: 17px;
+  letter-spacing: 0.06em;
+}
+.brand svg {
+  width: 17px;
+  height: 17px;
+  flex: none;
+}
+.topnav {
+  display: flex;
+  gap: 22px;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+.topnav a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* 页脚 */
+.footer {
+  margin-top: 80px;
+  padding: 30px 0 44px;
+  border-top: 1px solid var(--line);
+  text-align: center;
+  font-size: 13px;
+  line-height: 2;
+  color: var(--ink-3);
+}
+.footer a {
+  color: var(--ink-2);
+}
+.footer a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.footer .sep {
+  margin: 0 6px;
+  color: var(--line);
+}
+
+/* 通用零件 ------------------------------------------------------------- */
+
+.muted {
+  color: var(--ink-3);
+}
+
+/* 区块标题：上方一道纯黑细线，是这套版面上唯一"重"的东西
+   吸顶：滑到哪都还知道自己在哪一节。它是整幅宽的白条，侧栏卡片从下面滑过时
+   上半截会被它盖住 —— 白底不透明是故意的，不然标题字会压在卡片上；侧栏本身
+   不跟着钉（见 Sidebar.astro），只跟着页面滚 */
+.section-head {
+  position: sticky;
+  top: var(--topbar);
+  z-index: 10;
+  background: var(--paper);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 0 12px;
+  border-top: 1px solid var(--ink);
+}
+.section-head h2 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.section-head .count {
+  font-size: 13px;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 卡片 / 灰框 */
+.card {
+  background: var(--fill);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+.card + .card {
+  margin-top: 16px;
+}
+.card .card-title {
+  margin: 0 0 12px;
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+/* 按钮 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 18px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+.btn:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+.btn svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+}
+.btn--solid {
+  background: var(--ink);
+  color: var(--paper);
+}
+.btn--solid:hover {
+  background: var(--paper);
+  color: var(--ink);
+}
+/* 标签 */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 27px;
+  padding: 0 12px;
+  background: var(--fill);
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+a.chip:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+.chip .n {
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+a.chip:hover .n {
+  color: var(--paper);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* 正文排版（文章页） --------------------------------------------------- */
+
+.prose {
+  font-size: 16px;
+  line-height: 1.85;
+  color: var(--ink);
+}
+.prose > * + * {
+  margin-top: 1.1em;
+}
+.prose h2,
+.prose h3 {
+  font-family: var(--serif);
+  letter-spacing: 0.04em;
+  margin-top: 2em;
+  margin-bottom: 0.6em;
+}
+.prose h2 {
+  font-size: 21px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.prose h3 {
+  font-size: 17px;
+}
+.prose a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--ink-3);
+}
+.prose a:hover {
+  text-decoration-color: var(--ink);
+}
+.prose ul,
+.prose ol {
+  padding-left: 1.4em;
+}
+.prose li + li {
+  margin-top: 0.3em;
+}
+.prose blockquote {
+  margin: 1.4em 0;
+  padding: 2px 0 2px 16px;
+  border-left: 2px solid var(--ink);
+  color: var(--ink-2);
+}
+.prose code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.88em;
+  background: var(--fill);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+}
+.prose pre {
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow-x: auto;
+  font-size: 13.5px;
+  line-height: 1.7;
+}
+.prose pre code {
+  background: none;
+  padding: 0;
+  font-size: 1em;
+}
+.prose hr {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 2.2em 0;
+}
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.prose th,
+.prose td {
+  border-bottom: 1px solid var(--line);
+  padding: 8px 10px;
+  text-align: left;
+}

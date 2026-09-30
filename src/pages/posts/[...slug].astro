@@ -1,0 +1,189 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import { getPosts, formatDate, type Post } from '../../lib/posts';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post, i) => ({
+    params: { slug: post.id },
+    props: { post, newer: posts[i - 1], older: posts[i + 1] },
+  }));
+}
+
+interface Props {
+  post: Post;
+  newer?: Post;
+  older?: Post;
+}
+
+const { post, newer, older } = Astro.props;
+const { Content } = await render(post);
+---
+
+<Base title={post.data.title} description={post.data.description}>
+  <article class="post">
+    <div class="wrap-narrow">
+      <a class="back" href="/notes/">
+        <Icon name="pen" size={14} />
+        笔记
+      </a>
+
+      <header class="head">
+        <p class="meta">
+          <span class="cat">{post.data.category}</span>
+          <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+        </p>
+        <h1>{post.data.title}</h1>
+        <p class="desc">{post.data.description}</p>
+        {post.data.tags.length > 0 && (
+          <ul class="chips">
+            {post.data.tags.map((t) => (
+              <li class="chip">{t}</li>
+            ))}
+          </ul>
+        )}
+      </header>
+
+      <div class="prose">
+        <Content />
+      </div>
+
+      <nav class="siblings" aria-label="相邻文章">
+        <div>
+          {newer && (
+            <a href={`/posts/${newer.id}/`}>
+              <span class="label">更新的</span>
+              <span class="title">{newer.data.title}</span>
+            </a>
+          )}
+        </div>
+        <div class="right">
+          {older && (
+            <a href={`/posts/${older.id}/`}>
+              <span class="label">更早的</span>
+              <span class="title">{older.data.title}</span>
+            </a>
+          )}
+        </div>
+      </nav>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .post {
+    padding: 40px 0 0;
+  }
+
+  .wrap-narrow {
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+  .back:hover {
+    color: var(--ink);
+  }
+
+  .head {
+    margin-top: 26px;
+    padding-bottom: 26px;
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    font-size: 12.5px;
+    font-variant-numeric: tabular-nums;
+  }
+  .cat {
+    color: var(--ink);
+    border-bottom: 1px solid var(--ink-3);
+    padding-bottom: 1px;
+  }
+  .meta time {
+    color: var(--ink-3);
+  }
+
+  h1 {
+    margin: 14px 0 0;
+    font-family: var(--serif);
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 1.45;
+    letter-spacing: 0.03em;
+  }
+
+  .desc {
+    margin: 12px 0 0;
+    font-size: 14.5px;
+    line-height: 1.85;
+    color: var(--ink-2);
+  }
+
+  .chips {
+    margin-top: 16px;
+  }
+
+  .prose {
+    padding-top: 30px;
+  }
+
+  .siblings {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 64px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+  }
+  .siblings .right {
+    text-align: right;
+  }
+  .siblings a {
+    display: block;
+  }
+  .label {
+    display: block;
+    font-size: 12.5px;
+    color: var(--ink-3);
+  }
+  .title {
+    display: block;
+    margin-top: 4px;
+    font-family: var(--serif);
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+  .siblings a:hover .title {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  @media (max-width: 560px) {
+    h1 {
+      font-size: 25px;
+    }
+    .siblings {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .siblings .right {
+      text-align: left;
+    }
+  }
+</style>

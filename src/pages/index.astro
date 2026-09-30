@@ -1,0 +1,58 @@
+---
+import Base from '../layouts/Base.astro';
+import Profile from '../components/Profile.astro';
+import Sidebar from '../components/Sidebar.astro';
+import PostList from '../components/PostList.astro';
+import Pager from '../components/Pager.astro';
+import { getPosts } from '../lib/posts';
+import { site } from '../site.config';
+
+const posts = await getPosts();
+const totalPages = Math.max(1, Math.ceil(posts.length / site.perPage));
+const first = posts.slice(0, site.perPage);
+---
+
+<Base>
+  <Profile />
+
+  <section class="notes" id="notes">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>笔记</h2>
+        <span class="count">共 {posts.length} 篇</span>
+      </div>
+
+      <div class="notes-grid">
+        <Sidebar posts={posts} />
+        <div class="notes-main">
+          <PostList posts={first} />
+          <Pager current={1} total={totalPages} next={totalPages > 1 ? '/notes/2/' : undefined} base="/notes/" />
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .notes {
+    padding-top: 56px;
+  }
+
+  .notes-grid {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 56px;
+    margin-top: 14px;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .notes {
+      padding-top: 40px;
+    }
+    .notes-grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 32px;
+    }
+  }
+</style>

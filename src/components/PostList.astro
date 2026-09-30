@@ -1,0 +1,99 @@
+---
+import { formatDate, type Post } from '../lib/posts';
+
+interface Props {
+  posts: Post[];
+}
+
+const { posts } = Astro.props;
+---
+
+{posts.length === 0 ? (
+  <p class="empty">笔记还在整理中，第一篇很快就好。</p>
+) : (
+  <ol class="list">
+    {posts.map((post) => (
+      <li>
+        <a href={`/posts/${post.id}/`}>
+          <span class="meta">
+            <span class="cat">{post.data.category}</span>
+            <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+          </span>
+          <h3>{post.data.title}</h3>
+          <span class="desc">{post.data.description}</span>
+        </a>
+      </li>
+    ))}
+  </ol>
+)}
+
+<style>
+  .list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .list li + li {
+    border-top: 1px solid var(--line);
+  }
+
+  .list a {
+    display: block;
+    padding: 20px 0 22px;
+  }
+
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12.5px;
+    font-variant-numeric: tabular-nums;
+  }
+  .cat {
+    color: var(--ink);
+    border-bottom: 1px solid var(--ink-3);
+    padding-bottom: 1px;
+  }
+  .meta time {
+    color: var(--ink-3);
+  }
+
+  .list h3 {
+    margin: 8px 0 0;
+    font-family: var(--serif);
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    line-height: 1.55;
+    transition: text-decoration-color 0.16s ease;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 5px;
+    text-decoration-thickness: 1px;
+  }
+  .list a:hover h3 {
+    text-decoration-color: var(--ink-3);
+  }
+
+  .desc {
+    display: block;
+    margin-top: 7px;
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--ink-2);
+  }
+
+  .empty {
+    margin: 0;
+    padding: 22px 0;
+    font-size: 14.5px;
+    color: var(--ink-3);
+  }
+
+  @media (max-width: 560px) {
+    .list h3 {
+      font-size: 17px;
+    }
+  }
+</style>

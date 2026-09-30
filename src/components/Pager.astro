@@ -1,0 +1,78 @@
+---
+/** 分页条。只有一页时退化成图 2 那样的一枚页码，不会出现点不动的假链接。 */
+interface Props {
+  current: number;
+  total: number;
+  prev?: string;
+  next?: string;
+  /** 形如 /notes/ ，翻页链接就是 /notes/2/ */
+  base: string;
+}
+
+const { current, total, prev, next, base } = Astro.props;
+const pages = Array.from({ length: total }, (_, i) => i + 1);
+const href = (n: number) => (n === 1 ? base : `${base}${n}/`);
+---
+
+<nav class="pager" aria-label="分页">
+  {prev ? (
+    <a class="arrow" href={prev} aria-label="上一页">‹</a>
+  ) : (
+    <span class="arrow" aria-hidden="true">‹</span>
+  )}
+
+  {pages.map((n) =>
+    n === current ? (
+      <span class="page on" aria-current="page">{n}</span>
+    ) : (
+      <a class="page" href={href(n)}>{n}</a>
+    )
+  )}
+
+  {next ? (
+    <a class="arrow" href={next} aria-label="下一页">›</a>
+  ) : (
+    <span class="arrow" aria-hidden="true">›</span>
+  )}
+</nav>
+
+<style>
+  .pager {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding-top: 44px;
+  }
+
+  .page,
+  .arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    height: 34px;
+    padding: 0 6px;
+    border-radius: 8px;
+    background: var(--fill);
+    font-size: 13.5px;
+    font-variant-numeric: tabular-nums;
+    transition: background 0.16s ease, color 0.16s ease;
+  }
+
+  .arrow {
+    color: var(--ink-3);
+    font-size: 16px;
+    line-height: 1;
+  }
+  a.arrow:hover,
+  a.page:hover {
+    background: #e6e6e6;
+    color: var(--ink);
+  }
+
+  .page.on {
+    background: var(--ink);
+    color: var(--paper);
+  }
+</style>
