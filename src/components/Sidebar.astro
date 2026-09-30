@@ -1,8 +1,6 @@
 ---
-import Icon from './Icon.astro';
 import type { Post } from '../lib/posts';
 import { countCategories, countTags } from '../lib/posts';
-import { site } from '../site.config';
 
 interface Props {
   posts: Post[];
@@ -14,27 +12,19 @@ const tags = countTags(posts);
 ---
 
 <aside class="side">
-  <!-- 站点卡 -->
-  <div class="card site">
-    <h3 class="card-title cname">{site.name}</h3>
-    <p class="cdesc">{site.aside}</p>
-    <a class="btn btn--solid gh" href={site.github}>
-      <Icon name="github" size={15} />
-      GitHub
-    </a>
-  </div>
-
   <!-- 分类 -->
   <div class="card">
-    <h3 class="card-title">分类</h3>
+    <h3 class="card-title"><a href="/categories/">分类</a></h3>
     {categories.length === 0 ? (
       <p class="empty">还没有分类。</p>
     ) : (
       <ul class="tax">
         {categories.map((c) => (
           <li>
-            <span class="tname">{c.name}</span>
-            <span class="n">{c.count}</span>
+            <a class="tax-row" href={`/categories/${c.name}/`}>
+              <span class="tname">{c.name}</span>
+              <span class="n">{c.count}</span>
+            </a>
           </li>
         ))}
       </ul>
@@ -43,15 +33,17 @@ const tags = countTags(posts);
 
   <!-- 标签 -->
   <div class="card">
-    <h3 class="card-title">标签</h3>
+    <h3 class="card-title"><a href="/tags/">标签</a></h3>
     {tags.length === 0 ? (
       <p class="empty">还没有标签。</p>
     ) : (
-      <ul class="chips taglist">
+      <ul class="chips">
         {tags.map((t) => (
-          <li class="chip">
-            {t.name}
-            <span class="n">{t.count}</span>
+          <li>
+            <a class="chip" href={`/tags/${t.name}/`}>
+              {t.name}
+              <span class="n">{t.count}</span>
+            </a>
           </li>
         ))}
       </ul>
@@ -60,8 +52,8 @@ const tags = countTags(posts);
 </aside>
 
 <style>
-  /* 侧栏跟着滚动一直可见：钉在标题条正下方（--topbar + --headh + 网格的上边距）。
-     它六百多像素高，窗口太矮时靠 max-height 让它在自己内部滚，保证始终完整可见；
+  /* 左栏跟着滚动一直可见：钉在标题条正下方（--topbar + --headh + 网格的上边距）。
+     窗口太矮时靠 max-height 让它在自己内部滚，保证始终完整可见；
      单列布局（窄屏）下左栏本来就在正文前面，不再吸顶。 */
   .side {
     align-self: start;
@@ -83,57 +75,9 @@ const tags = countTags(posts);
     }
   }
 
-  .site {
-    text-align: center;
-  }
-  .card-title.cname {
-    font-size: 17px;
-    letter-spacing: 0.08em;
-  }
-  .cdesc {
-    margin: 8px 0 14px;
-    font-size: 13.5px;
-    line-height: 1.8;
-    color: var(--ink-2);
-  }
-  .gh {
-    width: 100%;
-  }
-
-  .tax {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .tax li {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 8px 0;
-    border-top: 1px solid #e8e8e8;
-  }
-  .tax li:first-child {
-    border-top: 0;
-    padding-top: 0;
-  }
-  .tname {
-    color: var(--ink);
-  }
-  .n {
-    font-size: 12.5px;
-    color: var(--ink-3);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .taglist {
-    margin: 0;
-  }
-
   .empty {
     margin: 0;
     font-size: 13.5px;
     color: var(--ink-3);
   }
-
 </style>

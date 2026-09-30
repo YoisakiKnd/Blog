@@ -1,0 +1,36 @@
+---
+import Base from '../../layouts/Base.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import PostList from '../../components/PostList.astro';
+import { getPosts } from '../../lib/posts';
+import { site } from '../../site.config';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  const names = [...new Set(posts.map((p) => p.data.category))];
+  return names.map((name) => ({ params: { name }, props: { name } }));
+}
+
+const { name } = Astro.props as { name: string };
+const all = await getPosts();
+const posts = all.filter((p) => p.data.category === name);
+---
+
+<Base title={`分类：${name}`} description={`${site.name}里「${name}」分类下的笔记。`}>
+  <section class="archive">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>分类：{name}</h2>
+        <span class="count">共 {posts.length} 篇</span>
+      </div>
+
+      <div class="notes-grid">
+        <Sidebar posts={all} />
+        <div>
+          <PostList posts={posts} />
+          <p class="back"><a href="/categories/">← 全部分类</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

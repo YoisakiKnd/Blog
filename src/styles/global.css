@@ -239,39 +239,6 @@ img {
 }
 
 /* 按钮 */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 38px;
-  padding: 0 18px;
-  border: 1px solid var(--ink);
-  border-radius: 999px;
-  background: var(--paper);
-  color: var(--ink);
-  font-size: 14px;
-  line-height: 1;
-  transition: background 0.16s ease, color 0.16s ease;
-}
-.btn:hover {
-  background: var(--ink);
-  color: var(--paper);
-}
-.btn svg {
-  width: 15px;
-  height: 15px;
-  flex: none;
-}
-.btn--solid {
-  background: var(--ink);
-  color: var(--paper);
-}
-.btn--solid:hover {
-  background: var(--paper);
-  color: var(--ink);
-}
-/* 标签 */
 .chips {
   display: flex;
   flex-wrap: wrap;
@@ -299,6 +266,62 @@ a.chip:hover {
 .chip .n {
   color: var(--ink-3);
   font-variant-numeric: tabular-nums;
+}
+
+/* 分类行 / 标签片：左栏和分类页、标签页共用 */
+.tax {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tax li + li {
+  border-top: 1px solid #e8e8e8;
+}
+.tax-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+}
+.tax li:first-child .tax-row {
+  padding-top: 0;
+}
+.tname {
+  color: var(--ink);
+}
+.tax .n {
+  font-size: 12.5px;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.card-title a {
+  color: inherit;
+}
+.card-title a:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--ink-3);
+  text-underline-offset: 4px;
+}
+
+/* 分类页、标签页、笔记页共用的区块顶距 */
+.archive {
+  padding-top: 56px;
+}
+.back {
+  margin: 26px 0 0;
+  font-size: 13.5px;
+}
+.back a {
+  color: var(--ink-3);
+}
+.back a:hover {
+  color: var(--ink);
+}
+@media (max-width: 900px) {
+  .archive {
+    padding-top: 40px;
+  }
 }
 a.chip:hover .n {
   color: var(--paper);

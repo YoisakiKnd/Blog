@@ -21,7 +21,6 @@ export const site = {
   repo: githubUser,
   readme: 'README.md',
   /** 侧栏站点卡里的一句话 */
-  aside: '写点笔记，记点日常。',
   /** 文章列表每页条数 */
   perPage: 8,
   /** 底部波浪图上面的那句话 */

@@ -1,0 +1,39 @@
+---
+import Base from '../../layouts/Base.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import { getPosts, countCategories } from '../../lib/posts';
+import { site } from '../../site.config';
+
+const all = await getPosts();
+const categories = countCategories(all);
+---
+
+<Base title="分类" description={`${site.name}的全部笔记分类。`}>
+  <section class="archive">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>分类</h2>
+        <span class="count">共 {categories.length} 个</span>
+      </div>
+
+      <div class="notes-grid">
+        <Sidebar posts={all} />
+        <div>
+          <div class="card">
+            <ul class="tax">
+              {categories.map((c) => (
+                <li>
+                  <a class="tax-row" href={`/categories/${c.name}/`}>
+                    <span class="tname">{c.name}</span>
+                    <span class="n">{c.count}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <p class="back"><a href="/notes/">← 全部笔记</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
