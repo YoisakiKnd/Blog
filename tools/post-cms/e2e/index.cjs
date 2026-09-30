@@ -50,6 +50,7 @@ async function run() {
   console.log('[e2e] refresh 可执行，活动栏容器 postCms 存在');
 
   const file = path.join(folder.uri.fsPath, 'src/content/posts/astro-rewrite.md');
+  const originalBytes = fs.readFileSync(file); // 拿真仓库的文件跑，收尾要按原始字节还原
   const post = { file, slug: 'astro-rewrite', title: '把站点从 Fuwari 换成 Astro', category: '折腾', tags: [], draft: false, pubDate: '2026-09-27', description: '' };
 
   await vscode.commands.executeCommand('postCms.toggleDraft', post);
@@ -63,8 +64,13 @@ async function run() {
   assert.ok(active && active.document.uri.fsPath === file, 'openPost 没打开对应文件');
   console.log('[e2e] openPost 打开的就是那个文件');
 
-  await vscode.commands.executeCommand('postCms.toggleDraft', post); // 还原
-  assert.match(fs.readFileSync(file, 'utf8'), /draft: false/);
+  await vscode.commands.executeCommand('postCms.toggleDraft', post); // 再翻回草稿
+  assert.match(fs.readFileSync(file, 'utf8'), /draft: false/, 'toggleDraft 第二次没翻回来');
+
+  // 这篇文章原本没有 draft 这一行，翻两次虽然语义相同但会多出一行，所以收尾按原始字节还原
+  fs.writeFileSync(file, originalBytes);
+  assert.ok(fs.readFileSync(file).equals(originalBytes), '收尾没把文章还原成原样');
+  console.log('[e2e] 文章已按原始字节还原');
 
   // 页面数据：真机里定位一次，确认打开的是 site.config.ts 且落在数组那一行
   const configFile = path.join(folder.uri.fsPath, 'src/site.config.ts');
