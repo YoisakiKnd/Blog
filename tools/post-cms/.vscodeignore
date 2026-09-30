@@ -6,6 +6,6 @@ esbuild.mjs
 tsconfig.json
 node_modules/**
 out/posts.mjs
-out/extension-with-mock.mjs
+out/*.mjs
 **/*.map
 pnpm-lock.yaml
