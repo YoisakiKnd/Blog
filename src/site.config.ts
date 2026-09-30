@@ -101,11 +101,7 @@ export const assets = {
   /** 底部那条波浪。原图自带一行白字，压在浅色渐变上几乎看不见，所以这里不带 text 参数，文字用页面上的真字 */
   wave: 'https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=12,14,20&height=100&section=footer',
 };
-/**
- * 项目页。desc 一句话，status 右对齐显示成小灰字。
- * 现在这两条是从示例文章「用 Rust 写了两个自己每天都会用的小工具」里抄来的，
- * 换成你自己的项目即可（href 现在都指向你的 GitHub）。
- */
+/** 项目页。desc 一句话，status 右对齐显示成小灰字。下面是占位，换成你自己的项目 */
 export const projects = [
   { name: 'clip-time', desc: '把剪贴板里的时间戳转成人能读的时间', href: site.github, status: '在用' },
   { name: 'rename-photos', desc: '按拍摄时间批量重命名照片', href: site.github, status: '在用' },

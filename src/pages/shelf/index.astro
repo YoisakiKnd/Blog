@@ -12,9 +12,7 @@ import { shelf, site } from '../../site.config';
 
     <div class="page-main">
       {shelf.length === 0 ? (
-        <p class="empty">
-          书架还空着。已经写过的读书笔记在 <a href="/categories/读书/">读书</a> 这个分类里。
-        </p>
+        <p class="empty">书架还空着。哪天把读完的书列一遍再放上来。</p>
       ) : (
         <ul class="rows">
           {shelf.map((b) => (
