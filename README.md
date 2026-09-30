@@ -120,3 +120,7 @@ pnpm build
 ```
 
 想直连就改 `src/site.config.ts` 的 `avatar`，换成那个完整地址，别的都不用动。
+
+## 许可
+
+代码用 MIT（见 `LICENSE`）——随便拿去改、拿去用。但 `src/content/posts/` 里的文章内容是我自己写的，版权归本人，转载前说一声。
