@@ -136,10 +136,12 @@ img {
   text-underline-offset: 4px;
 }
 
-/* 页脚 */
+/* 页脚。上面这段留白刻意收得比较紧：左栏吸顶能不能钉到页面最后一屏，
+   取决于网格下面还剩多少高度（页脚越高，左栏越早被自己的容器顶出去、
+   从标题条底下滑过去）。 */
 .footer {
-  margin-top: 80px;
-  padding: 30px 0 44px;
+  margin-top: 24px;
+  padding: 18px 0 28px;
   border-top: 1px solid var(--line);
   text-align: center;
   font-size: 13px;
@@ -166,18 +168,14 @@ img {
 }
 
 /* 区块标题：上方一道纯黑细线，是这套版面上唯一"重"的东西。
-   吸顶，钉在顶栏正下方（滑到哪都还知道自己在哪一节）。
-
-   它整幅宽压下来的话，左栏卡片滚上来必然被切掉半张（左栏六百多像素高，
-   只要列表快到底，左边就一定会从它下面钻过去）；所以白底和那道黑线只压
-   正文那一列（margin-left = 左栏宽 + 列间距），左栏那一整列是空的 ——
-   左栏同时独立吸顶（见 Sidebar.astro 的 .side），两边谁也不压谁。 */
+   整幅宽的一条，吸顶钉在顶栏正下方（滑到哪都还知道自己在哪一节）。
+   白底不透明，正文从它底下滑过去时正好被压住。
+   左栏也独立吸顶（见 Sidebar.astro 的 .side），钉在这条底下，不重叠。 */
 .section-head {
   position: sticky;
   top: var(--topbar);
   z-index: 10;
   background: var(--paper);
-  margin-left: calc(260px + 56px);
   display: flex;
   align-items: baseline;
   justify-content: space-between;
@@ -198,14 +196,12 @@ img {
   font-variant-numeric: tabular-nums;
 }
 
-/* 笔记区网格：左栏 260px + 正文列。标题条只压正文那一列、又留在文档流里，
-   所以把网格上提一个标题条的高度 —— 左栏第一张卡片就与「笔记」齐平，
-   正文列用 padding 让开标题条；吸顶时两边互不干涉。 */
+/* 笔记区网格：左栏 260px + 正文列，标题条整幅宽压在网格上面 */
 .notes-grid {
   display: grid;
   grid-template-columns: 260px minmax(0, 1fr);
   gap: 56px;
-  margin-top: calc(-1 * var(--headh));
+  margin-top: 14px;
   align-items: start;
 }
 
@@ -213,21 +209,15 @@ img {
    左栏六百多像素高，正文列比它矮的话，左栏钉住的余量几乎是 0，看着就像没钉。 */
 .notes-main {
   min-height: calc(100vh - var(--topbar) - var(--headh) - 28px);
-  padding-top: calc(var(--headh) + 14px);
 }
 
 @media (max-width: 900px) {
-  .section-head {
-    margin-left: 0;
-  }
   .notes-grid {
     grid-template-columns: minmax(0, 1fr);
     gap: 32px;
-    margin-top: 14px;
   }
   .notes-main {
     min-height: 0;
-    padding-top: 0;
   }
 }
 
