@@ -12,11 +12,11 @@ pnpm build    # 输出到 dist/，纯静态文件，丢到任何地方都能跑
 
 ## 体积
 
-`pnpm build` 之后整站 152 KB，其中：
+`pnpm build` 之后整站 156 KB，其中：
 
 | 项 | 大小 |
 | --- | --- |
-| HTML（7 个页面） | ~130 KB |
+| HTML（8 个页面） | ~134 KB |
 | CSS（全站共用） | 4.7 KB |
 | CSS（只有个人页要） | 4.8 KB |
 | 头像 `avatar.webp` | 6.7 KB |
@@ -82,6 +82,7 @@ draft: false      # true 就不发布
 - `/` 个人页，下滑就是笔记列表
 - `/notes/` 全部笔记（文章超过 8 篇会自动分页成 `/notes/2/`）
 - `/posts/<文件名>/` 文章页
+- `/404.html` 找不到的地址（Cloudflare 的静态资源会自动拿它当 404 页）
 - `/rss.xml`、`/sitemap-index.xml`
 
 ## 上线前记得改
@@ -94,15 +95,22 @@ draft: false      # true 就不发布
 
 ## 部署
 
-纯静态，丢哪都能跑。Cloudflare Pages 上的设置是：构建命令 `pnpm build`、产物目录 `dist`、
-Node 20 以上（它那边给的是 24）。
+纯静态，丢哪都能跑。这台机器上走的是 **Cloudflare Workers**（不是 Pages）：构建命令
+`pnpm build`、部署命令 `npx wrangler deploy`、产物目录 `dist`，Node 20 以上（它那边给的是 24）。
 
-一个坑记一下：仓库里那个 `pnpm-workspace.yaml` **不能删、也不能少 `packages:` 字段**。
-pnpm 10 只要看见这个文件就要求有 `packages`，缺了直接报
-`ERROR packages field missing or empty`，构建就挂在这一步（Cloudflare 上跑的是 pnpm 10，
-本地是 12，两边表现不一样，所以本地测不出来）。同一个文件里 `allowBuilds`（pnpm 11/12 认）
-和 `onlyBuiltDependencies`（pnpm 10 认）都写着——两个版本叫法不同，写全了 esbuild 的
-安装脚本才不会被拦下来。
+两个坑记一下：
+
+1. **`wrangler.jsonc` 里不能写 `main`。** 这个站是纯静态，没有 Worker 脚本；老站用
+   `@astrojs/cloudflare` 适配器时会生成 `dist/_worker.js`，这里没有。配置里只写
+   `assets.directory`（= `./dist`），wrangler 会把这些文件当静态资源传上去。少了 `main`
+   时 wrangler 会去猜框架、试图跑 `astro add cloudflare`，最后报
+   `The entry-point file at "dist/_worker.js/index.js" was not found` 让部署失败。
+   本地可以用 `npx wrangler deploy --dry-run` 验配置，它会打印读到了多少个资源文件。
+2. **`pnpm-workspace.yaml` 不能删、也不能少 `packages:` 字段。** pnpm 10 只要看见这个文件
+   就要求有 `packages`，缺了直接报 `ERROR packages field missing or empty`，构建挂在这一步
+   （Cloudflare 上是 pnpm 10，本地是 12，表现不一样，所以本地测不出来）。同一个文件里
+   `allowBuilds`（pnpm 11/12 认）和 `onlyBuiltDependencies`（pnpm 10 认）都写着——两个版本
+   叫法不同，写全了 esbuild 的安装脚本才不会被拦下来。
 
 ## 关于头像
 

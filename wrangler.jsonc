@@ -1,0 +1,12 @@
+{
+  // 纯静态站：dist 里的文件直接当静态资源上传，不跑 Worker 脚本。
+  // 老站用的是 @astrojs/cloudflare 适配器，产物里有 dist/_worker.js（SSR 用），
+  // 这个站没有也不需要 —— 所以这里不写 main，只写 assets；
+  // 否则 wrangler 会因为找不到 _worker.js 而部署失败。
+  "name": "blog",
+  "compatibility_date": "2026-09-26",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page"
+  }
+}

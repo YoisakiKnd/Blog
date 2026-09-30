@@ -1,0 +1,60 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="页面没找到" description="这个地址下没有东西。">
+  <div class="wrap nf">
+    <p class="code">404</p>
+    <h1>这里什么都没有</h1>
+    <p class="hint">链接可能写错了，或者这篇文章已经被我删掉。</p>
+    <p class="links">
+      <a href="/">回首页</a>
+      <span class="sep">/</span>
+      <a href="/notes/">翻笔记</a>
+    </p>
+  </div>
+</Base>
+
+<style>
+  .nf {
+    padding: 96px 0 120px;
+  }
+
+  .code {
+    font-family: var(--serif);
+    font-size: 72px;
+    line-height: 1;
+    letter-spacing: 0.06em;
+    margin: 0 0 24px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--ink);
+    display: inline-block;
+  }
+
+  h1 {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    margin: 0 0 10px;
+  }
+
+  .hint {
+    color: var(--ink-3);
+    margin: 0 0 26px;
+  }
+
+  .links {
+    margin: 0;
+    font-size: 15px;
+  }
+
+  .links a {
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 1px;
+  }
+
+  .sep {
+    color: var(--line);
+    margin: 0 10px;
+  }
+</style>
