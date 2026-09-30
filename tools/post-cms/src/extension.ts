@@ -13,6 +13,7 @@ import {
   slugify,
   type Post,
 } from './posts';
+import { registerPages } from './pages-view';
 
 let output: vscode.OutputChannel | undefined;
 
@@ -118,6 +119,7 @@ async function pickTags(dir: string, current: string[]): Promise<string[] | unde
 
 export function activate(context: vscode.ExtensionContext): void {
   output = vscode.window.createOutputChannel('笔记 CMS');
+  registerPages(context);
   const provider = new PostsProvider();
 
   context.subscriptions.push(

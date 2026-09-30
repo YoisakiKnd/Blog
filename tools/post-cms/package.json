@@ -2,7 +2,7 @@
   "name": "post-cms",
   "displayName": "笔记 CMS",
   "description": "在编辑器里新建、改 frontmatter、发布笔记，并打开本地预览",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "tyling",
   "license": "MIT",
   "repository": {
@@ -30,6 +30,10 @@
           "id": "postCms.posts",
           "name": "笔记",
           "when": "workspaceFolderCount > 0"
+        },
+        {
+          "id": "postCms.pages",
+          "name": "页面数据"
         }
       ]
     },
@@ -40,32 +44,182 @@
       }
     ],
     "commands": [
-      { "command": "postCms.newPost", "title": "新建文章", "category": "笔记", "icon": "$(add)" },
-      { "command": "postCms.refresh", "title": "刷新列表", "category": "笔记", "icon": "$(refresh)" },
-      { "command": "postCms.startDev", "title": "启动本地预览（pnpm dev）", "category": "笔记", "icon": "$(play)" },
-      { "command": "postCms.openPost", "title": "打开文章", "category": "笔记" },
-      { "command": "postCms.openPreview", "title": "在浏览器里打开", "category": "笔记", "icon": "$(globe)" },
-      { "command": "postCms.toggleDraft", "title": "发布 / 转回草稿", "category": "笔记", "icon": "$(check)" },
-      { "command": "postCms.setCategory", "title": "改分类", "category": "笔记" },
-      { "command": "postCms.setTags", "title": "改标签", "category": "笔记" },
-      { "command": "postCms.setSeries", "title": "改系列", "category": "笔记" },
-      { "command": "postCms.setDate", "title": "改发布日期", "category": "笔记" },
-      { "command": "postCms.deletePost", "title": "删除文章", "category": "笔记", "icon": "$(trash)" }
+      {
+        "command": "postCms.newPost",
+        "title": "新建文章",
+        "category": "笔记",
+        "icon": "$(add)"
+      },
+      {
+        "command": "postCms.refresh",
+        "title": "刷新列表",
+        "category": "笔记",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "postCms.startDev",
+        "title": "启动本地预览（pnpm dev）",
+        "category": "笔记",
+        "icon": "$(play)"
+      },
+      {
+        "command": "postCms.openPost",
+        "title": "打开文章",
+        "category": "笔记"
+      },
+      {
+        "command": "postCms.openPreview",
+        "title": "在浏览器里打开",
+        "category": "笔记",
+        "icon": "$(globe)"
+      },
+      {
+        "command": "postCms.toggleDraft",
+        "title": "发布 / 转回草稿",
+        "category": "笔记",
+        "icon": "$(check)"
+      },
+      {
+        "command": "postCms.setCategory",
+        "title": "改分类",
+        "category": "笔记"
+      },
+      {
+        "command": "postCms.setTags",
+        "title": "改标签",
+        "category": "笔记"
+      },
+      {
+        "command": "postCms.setSeries",
+        "title": "改系列",
+        "category": "笔记"
+      },
+      {
+        "command": "postCms.setDate",
+        "title": "改发布日期",
+        "category": "笔记"
+      },
+      {
+        "command": "postCms.deletePost",
+        "title": "删除文章",
+        "category": "笔记",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "postCms.refreshPages",
+        "title": "刷新页面数据",
+        "category": "笔记"
+      },
+      {
+        "command": "postCms.openDataPage",
+        "title": "在浏览器里打开这个页面",
+        "category": "笔记"
+      },
+      {
+        "command": "postCms.revealData",
+        "title": "在 site.config.ts 里定位",
+        "category": "笔记"
+      },
+      {
+        "command": "postCms.addData",
+        "title": "加一项",
+        "category": "笔记"
+      },
+      {
+        "command": "postCms.editData",
+        "title": "改字段",
+        "category": "笔记"
+      },
+      {
+        "command": "postCms.removeData",
+        "title": "删掉这一项",
+        "category": "笔记"
+      }
     ],
     "menus": {
       "view/title": [
-        { "command": "postCms.newPost", "when": "view == postCms.posts", "group": "navigation@1" },
-        { "command": "postCms.startDev", "when": "view == postCms.posts", "group": "navigation@2" },
-        { "command": "postCms.refresh", "when": "view == postCms.posts", "group": "navigation@3" }
+        {
+          "command": "postCms.refresh",
+          "when": "view == postCms.posts",
+          "group": "navigation@1"
+        },
+        {
+          "command": "postCms.startDev",
+          "when": "view == postCms.posts",
+          "group": "navigation@2"
+        },
+        {
+          "command": "postCms.refreshPages",
+          "when": "view == postCms.pages",
+          "group": "navigation@1"
+        },
+        {
+          "command": "postCms.startDev",
+          "when": "view == postCms.pages",
+          "group": "navigation@2"
+        }
       ],
       "view/item/context": [
-        { "command": "postCms.openPreview", "when": "viewItem =~ /postCms\\.(draft|published)/", "group": "inline@1" },
-        { "command": "postCms.toggleDraft", "when": "viewItem =~ /postCms\\.(draft|published)/", "group": "inline@2" },
-        { "command": "postCms.deletePost", "when": "viewItem =~ /postCms\\.(draft|published)/", "group": "inline@3" },
-        { "command": "postCms.setCategory", "when": "viewItem =~ /postCms\\.(draft|published)/", "group": "1_edit@1" },
-        { "command": "postCms.setTags", "when": "viewItem =~ /postCms\\.(draft|published)/", "group": "1_edit@2" },
-        { "command": "postCms.setSeries", "when": "viewItem =~ /postCms\\.(draft|published)/", "group": "1_edit@3" },
-        { "command": "postCms.setDate", "when": "viewItem =~ /postCms\\.(draft|published)/", "group": "1_edit@4" }
+        {
+          "command": "postCms.openPreview",
+          "when": "viewItem =~ /postCms\\.(draft|published)/",
+          "group": "inline@1"
+        },
+        {
+          "command": "postCms.toggleDraft",
+          "when": "viewItem =~ /postCms\\.(draft|published)/",
+          "group": "inline@2"
+        },
+        {
+          "command": "postCms.deletePost",
+          "when": "viewItem =~ /postCms\\.(draft|published)/",
+          "group": "inline@3"
+        },
+        {
+          "command": "postCms.setCategory",
+          "when": "viewItem =~ /postCms\\.(draft|published)/",
+          "group": "1_edit@1"
+        },
+        {
+          "command": "postCms.setTags",
+          "when": "viewItem =~ /postCms\\.(draft|published)/",
+          "group": "1_edit@2"
+        },
+        {
+          "command": "postCms.setSeries",
+          "when": "viewItem =~ /postCms\\.(draft|published)/",
+          "group": "1_edit@3"
+        },
+        {
+          "command": "postCms.setDate",
+          "when": "viewItem =~ /postCms\\.(draft|published)/",
+          "group": "1_edit@4"
+        },
+        {
+          "command": "postCms.openDataPage",
+          "when": "view == postCms.pages && viewItem == postCms.page",
+          "group": "inline@1"
+        },
+        {
+          "command": "postCms.revealData",
+          "when": "view == postCms.pages",
+          "group": "inline@2"
+        },
+        {
+          "command": "postCms.addData",
+          "when": "view == postCms.pages && (viewItem == postCms.page || viewItem == postCms.entry || viewItem == postCms.doing)",
+          "group": "inline@3"
+        },
+        {
+          "command": "postCms.editData",
+          "when": "view == postCms.pages && viewItem != postCms.page",
+          "group": "1_edit@1"
+        },
+        {
+          "command": "postCms.removeData",
+          "when": "view == postCms.pages && (viewItem == postCms.entry || viewItem == postCms.item || viewItem == postCms.doingItem)",
+          "group": "2_remove@1"
+        }
       ]
     },
     "configuration": {
@@ -90,6 +244,11 @@
           "type": "string",
           "default": "日常",
           "description": "新建文章时的默认分类"
+        },
+        "postCms.configFile": {
+          "type": "string",
+          "default": "src/site.config.ts",
+          "description": "数据页（项目/友链/装备/书架/现在）所在的配置文件，相对仓库根"
         }
       }
     }

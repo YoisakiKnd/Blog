@@ -6,6 +6,8 @@ import * as path from 'node:path';
 import * as ext from '../out/extension-with-mock.mjs';
 import { calls, workspace, window } from './vscode-mock.mjs';
 import * as P from '../out/posts.mjs';
+import * as S from '../out/siteconf.mjs';
+import { transform } from 'esbuild';
 
 const REPO = path.resolve(import.meta.dirname, '../../..');
 const manifest = JSON.parse(fs.readFileSync(path.join(REPO, 'tools/post-cms/package.json'), 'utf8'));
@@ -15,6 +17,8 @@ before(() => {
   root = fs.mkdtempSync(path.join(os.tmpdir(), 'post-cms-ext-'));
   fs.mkdirSync(path.join(root, 'src/content/posts'), { recursive: true });
   fs.copyFileSync(path.join(REPO, 'src/content/posts/astro-rewrite.md'), path.join(root, 'src/content/posts/astro-rewrite.md'));
+  // 页面数据视图要读 site.config.ts，临时工作区里也得有一份
+  fs.copyFileSync(path.join(REPO, 'src/site.config.ts'), path.join(root, 'src/site.config.ts'));
   workspace.workspaceFolders = [{ uri: { fsPath: root }, name: 'blog', index: 0 }];
   ext.activate({ subscriptions: [] });
 });
@@ -27,12 +31,42 @@ test('package.json 里声明的命令，代码里全都注册了', () => {
 });
 
 test('视图 id 和 viewsWelcome / menus 里写的对得上', () => {
-  const viewId = manifest.contributes.views.explorer[0].id;
-  assert.deepEqual(calls.views, [viewId]);
-  assert.equal(manifest.contributes.viewsWelcome[0].view, viewId);
-  for (const m of [...manifest.contributes.menus['view/title'], ...manifest.contributes.menus['view/item/context']]) {
-    assert.ok(calls.commands.has(m.command), `菜单指向了没注册的命令：${m.command}`);
+  for (const v of manifest.contributes.views.explorer) assert.ok(calls.views.includes(v.id), `没建视图：${v.id}`);
+  assert.equal(manifest.contributes.viewsWelcome[0].view, manifest.contributes.views.explorer[0].id);
+  const all = [...manifest.contributes.menus['view/title'], ...manifest.contributes.menus['view/item/context']];
+  for (const m of all) assert.ok(calls.commands.has(m.command), `菜单指向了没注册的命令：${m.command}`);
+  // 菜单 when 里写的 viewItem 必须是代码里真的会出现的 contextValue，写错一个字菜单就永远不会出来。
+  // 有些值要等有数据才产生（装备没分组时就没有 item），所以这里比对已知集合，
+  // 另外走一遍树，确认至少 page / entry 这两种真的产得出来。
+  const KNOWN = new Set([
+    'postCms.draft',
+    'postCms.published',
+    'postCms.page',
+    'postCms.entry',
+    'postCms.field',
+    'postCms.item',
+    'postCms.itemField',
+    'postCms.date',
+    'postCms.doing',
+    'postCms.doingItem',
+  ]);
+  const produced = new Set();
+  const walk = (list) => {
+    for (const entry of list ?? []) {
+      const p = calls.providers.get(entry.viewId);
+      const item = p.getTreeItem(entry.node);
+      if (item.contextValue) produced.add(item.contextValue);
+      walk((p.getChildren?.(entry.node) ?? []).map((n) => ({ viewId: entry.viewId, node: n })));
+    }
+  };
+  walk([...calls.providers.keys()].flatMap((viewId) => (calls.providers.get(viewId).getChildren?.() ?? []).map((node) => ({ viewId, node }))));
+  for (const m of all.filter((x) => x.when.includes('viewItem == '))) {
+    for (const match of m.when.matchAll(/viewItem == ([\w.]+)/g)) {
+      assert.ok(KNOWN.has(match[1]), `菜单 when 里写了代码没定义的 viewItem「${match[1]}」（命令 ${m.command}）`);
+    }
   }
+  assert.ok(produced.has('postCms.page'), '页面数据树没产出 page');
+  assert.ok(produced.has('postCms.entry'), '页面数据树没产出 entry');
 });
 
 test('新建文章：走完输入框就能落盘，并自动打开', async () => {
@@ -72,16 +106,86 @@ test('删除要确认，确认后才真的删', async () => {
 test('两组分得清：草稿归草稿、已发布归已发布', () => {
   const file = path.join(root, 'src/content/posts/astro-rewrite.md');
   assert.equal(P.readPost(file).draft, false);
-  const groups = calls.provider.getChildren();
+  const groups = calls.providers.get('postCms.posts').getChildren();
   assert.deepEqual(groups.map((g) => g.item.label), ['已发布（1）']);
 
   P.toggleDraft(file); // 变成草稿
-  const after = calls.provider.getChildren();
+  const after = calls.providers.get('postCms.posts').getChildren();
   assert.deepEqual(after.map((g) => g.item.label), ['草稿（1）']);
-  const items = calls.provider.getChildren(after[0]);
+  const items = calls.providers.get('postCms.posts').getChildren(after[0]);
   assert.equal(items.length, 1);
   assert.equal(items[0].item.label, '把站点从 Fuwari 换成 Astro');
   assert.match(items[0].item.description, /2026-09-27 · 折腾/);
   assert.equal(items[0].item.contextValue, 'postCms.draft');
   P.toggleDraft(file); // 还原
+});
+
+test('页面数据：读得出来，加一项、删一项，删完字节回到原样', async () => {
+  const configPath = path.join(root, 'src/site.config.ts');
+  const original = fs.readFileSync(path.join(REPO, 'src/site.config.ts'), 'utf8');
+  fs.writeFileSync(configPath, original);
+  const provider = calls.providers.get('postCms.pages');
+  const pages = provider.getChildren();
+  assert.deepEqual(pages.map((p) => p.page.label), ['项目', '友链', '装备', '书架', '现在']);
+
+  assert.equal(provider.getChildren(pages[0]).length, 2, '仓库里有两个项目');
+  assert.equal(provider.getChildren(pages[1]).length, 0, '友链本来是空的');
+
+  const answers = ['ty0', 'https://ty0.icu', '站长'];
+  calls.nextInput = () => answers.shift();
+  await calls.commands.get('postCms.addData')(pages[1]);
+  let text = fs.readFileSync(configPath, 'utf8');
+  await transform(text, { loader: 'ts' });
+  assert.equal(S.readArray(text, 'friends').entries.length, 1);
+  assert.equal(S.unquote(S.readArray(text, 'friends').entries[0].fields.get('name').raw), 'ty0');
+  assert.equal(S.readArray(text, 'projects').entries.length, 2, '别的数组被动了');
+  assert.equal(provider.getChildren(pages[1]).length, 1, '加完面板要马上能看到');
+
+  calls.confirm = () => '删除';
+  await calls.commands.get('postCms.removeData')(provider.getChildren(pages[1])[0]);
+  assert.equal(fs.readFileSync(configPath, 'utf8'), original, '加一项再删一项应该字节回到原样');
+
+  const gear = pages[2];
+  calls.nextInput = (() => { const q = ['键盘']; return () => q.shift(); })();
+  await calls.commands.get('postCms.addData')(gear);
+  text = fs.readFileSync(configPath, 'utf8');
+  await transform(text, { loader: 'ts' });
+  const group = provider.getChildren(gear)[0];
+  calls.nextInput = (() => { const q = ['HHKB Pro 2', '每天在敲']; return () => q.shift(); })();
+  await calls.commands.get('postCms.addData')(group);
+  text = fs.readFileSync(configPath, 'utf8');
+  await transform(text, { loader: 'ts' });
+  assert.match(text, /HHKB Pro 2/);
+  assert.equal(S.readNestedArray(text, 'gear', 0, 'items').entries.length, 1);
+  const groupChildren = provider.getChildren(group);
+  assert.equal(groupChildren.filter((n) => n.kind === 'item').length, 1, '装备组下面应该挂出这一件');
+  assert.equal(groupChildren.filter((n) => n.kind === 'field').length, 1, '分组名本身也应该是可见的一行');
+
+  calls.nextInput = (() => { const q = ['纳瓦尔宝典', 'Eric Jorgenson', '']; return () => q.shift(); })();
+  calls.nextQuickPick = () => '在读';
+  await calls.commands.get('postCms.addData')(pages[3]);
+  text = fs.readFileSync(configPath, 'utf8');
+  await transform(text, { loader: 'ts' });
+  const book = S.readArray(text, 'shelf').entries[0];
+  assert.equal(S.unquote(book.fields.get('title').raw), '纳瓦尔宝典');
+  assert.equal(S.unquote(book.fields.get('state').raw), '在读');
+  assert.equal(book.fields.has('note'), false, '留空的字段不该写进去');
+
+  const now = pages[4];
+  const nowChildren = provider.getChildren(now);
+  assert.deepEqual(nowChildren.map((n) => n.kind), ['date', 'doing']);
+  calls.nextInput = (() => { const q = ['2026-10-01']; return () => q.shift(); })();
+  await calls.commands.get('postCms.editData')(nowChildren[0]);
+  assert.equal(S.readScalar(fs.readFileSync(configPath, 'utf8'), 'now', 'updated'), '2026-10-01');
+
+  const doingBefore = S.readStrings(fs.readFileSync(configPath, 'utf8'), 'doing').length;
+  calls.nextInput = () => '把装备页填满';
+  calls.nextQuickPick = undefined;
+  await calls.commands.get('postCms.addData')(nowChildren[1]);
+  const after = fs.readFileSync(configPath, 'utf8');
+  await transform(after, { loader: 'ts' });
+  assert.equal(S.readStrings(after, 'doing').length, doingBefore + 1);
+  assert.equal(S.readStrings(after, 'doing').at(-1), '把装备页填满');
+
+  fs.writeFileSync(configPath, original);
 });

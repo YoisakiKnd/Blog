@@ -8,6 +8,7 @@ const common = { bundle: true, platform: 'node', target: 'node18', logLevel: 'wa
 
 await build({ ...common, entryPoints: ['src/extension.ts'], outfile: 'out/extension.js', format: 'cjs', external: ['vscode'] });
 await build({ ...common, entryPoints: ['src/posts.ts'], outfile: 'out/posts.mjs', format: 'esm' });
+await build({ ...common, entryPoints: ['src/siteconf.ts'], outfile: 'out/siteconf.mjs', format: 'esm' });
 
 // 测试版：把 vscode 换成 mock（esbuild 的 alias 只认包名，所以用插件来指路）
 await build({

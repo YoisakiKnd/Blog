@@ -1,5 +1,5 @@
 /** 只实现扩展用到的那几个 VS Code API，够把 activate() 跑起来看接线对不对 */
-export const calls = { commands: new Map(), views: [], inputs: [], quickPicks: [], messages: [], opened: [], terminals: [] };
+export const calls = { commands: new Map(), views: [], providers: new Map(), inputs: [], quickPicks: [], messages: [], opened: [], terminals: [] };
 
 export const EventEmitter = class {
   constructor() { this.event = () => ({ dispose() {} }); }
@@ -22,7 +22,7 @@ export const Uri = {
 
 export const window = {
   createOutputChannel: () => ({ appendLine: () => {}, dispose: () => {} }),
-  createTreeView: (id, options) => { calls.views.push(id); calls.provider = options.treeDataProvider; return { dispose: () => {} }; },
+  createTreeView: (id, options) => { calls.views.push(id); calls.providers.set(id, options.treeDataProvider); return { dispose: () => {} }; },
   showTextDocument: async (doc) => { calls.opened.push(doc.uri.fsPath); return doc; },
   showInformationMessage: (m) => { calls.messages.push(m); return Promise.resolve(undefined); },
   showWarningMessage: (m, ...rest) => {
@@ -37,6 +37,7 @@ export const window = {
 };
 
 export const workspace = {
+  textDocuments: [],
   workspaceFolders: [],
   getConfiguration: () => ({ get: (_k, d) => d }),
   openTextDocument: async (uri) => ({ uri }),

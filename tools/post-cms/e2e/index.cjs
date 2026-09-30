@@ -20,6 +20,12 @@ const EXPECTED = [
   'postCms.setSeries',
   'postCms.setDate',
   'postCms.deletePost',
+  'postCms.refreshPages',
+  'postCms.openDataPage',
+  'postCms.revealData',
+  'postCms.addData',
+  'postCms.editData',
+  'postCms.removeData',
 ];
 
 async function run() {
@@ -55,6 +61,17 @@ async function run() {
 
   await vscode.commands.executeCommand('postCms.toggleDraft', post); // 还原
   assert.match(fs.readFileSync(file, 'utf8'), /draft: false/);
+
+  // 页面数据：真机里定位一次，确认打开的是 site.config.ts 且落在数组那一行
+  const configFile = path.join(folder.uri.fsPath, 'src/site.config.ts');
+  await vscode.commands.executeCommand('postCms.revealData', {
+    kind: 'page',
+    page: { id: 'projects', label: '项目', url: '/projects/', array: 'projects', kind: 'object', primary: 'name', fields: [] },
+  });
+  const cfgEditor = vscode.window.activeTextEditor;
+  assert.ok(cfgEditor && cfgEditor.document.uri.fsPath === configFile, 'revealData 没打开 site.config.ts');
+  assert.ok(cfgEditor.selection.start.line > 0, '没定位到数组那一行');
+  console.log('[e2e] revealData 定位到 site.config.ts 第 ' + (cfgEditor.selection.start.line + 1) + ' 行');
   console.log('[e2e] 全部通过');
 }
 
