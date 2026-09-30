@@ -167,11 +167,10 @@ img {
    吸顶：滑到哪都还知道自己在哪一节。它是整幅宽的白条，侧栏卡片从下面滑过时
    上半截会被它盖住 —— 白底不透明是故意的，不然标题字会压在卡片上；侧栏本身
    不跟着钉（见 Sidebar.astro），只跟着页面滚 */
+/* 栏目标题条：跟着页面一起滚，不吸顶。
+   它一旦吸顶（position:sticky + 白底），左边那一栏的卡片滚上来就会被它盖掉，
+   看起来像左栏被卡住了 —— 所以这里刻意只留顶部导航条吸顶。 */
 .section-head {
-  position: sticky;
-  top: var(--topbar);
-  z-index: 10;
-  background: var(--paper);
   display: flex;
   align-items: baseline;
   justify-content: space-between;
