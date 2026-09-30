@@ -1,0 +1,110 @@
+{
+  "name": "post-cms",
+  "displayName": "笔记 CMS",
+  "description": "在编辑器里新建、改 frontmatter、发布笔记，并打开本地预览",
+  "version": "0.1.0",
+  "publisher": "tyling",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YoisakiKnd/Blog.git",
+    "directory": "tools/post-cms"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onView:postCms.posts",
+    "onCommand:postCms.newPost",
+    "onCommand:postCms.refresh",
+    "onCommand:postCms.startDev"
+  ],
+  "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "id": "postCms.posts",
+          "name": "笔记",
+          "when": "workspaceFolderCount > 0"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "postCms.posts",
+        "contents": "还没有笔记。\n[新建一篇](command:postCms.newPost)"
+      }
+    ],
+    "commands": [
+      { "command": "postCms.newPost", "title": "新建文章", "category": "笔记", "icon": "$(add)" },
+      { "command": "postCms.refresh", "title": "刷新列表", "category": "笔记", "icon": "$(refresh)" },
+      { "command": "postCms.startDev", "title": "启动本地预览（pnpm dev）", "category": "笔记", "icon": "$(play)" },
+      { "command": "postCms.openPost", "title": "打开文章", "category": "笔记" },
+      { "command": "postCms.openPreview", "title": "在浏览器里打开", "category": "笔记", "icon": "$(globe)" },
+      { "command": "postCms.toggleDraft", "title": "发布 / 转回草稿", "category": "笔记", "icon": "$(check)" },
+      { "command": "postCms.setCategory", "title": "改分类", "category": "笔记" },
+      { "command": "postCms.setTags", "title": "改标签", "category": "笔记" },
+      { "command": "postCms.setSeries", "title": "改系列", "category": "笔记" },
+      { "command": "postCms.setDate", "title": "改发布日期", "category": "笔记" },
+      { "command": "postCms.deletePost", "title": "删除文章", "category": "笔记", "icon": "$(trash)" }
+    ],
+    "menus": {
+      "view/title": [
+        { "command": "postCms.newPost", "when": "view == postCms.posts", "group": "navigation@1" },
+        { "command": "postCms.startDev", "when": "view == postCms.posts", "group": "navigation@2" },
+        { "command": "postCms.refresh", "when": "view == postCms.posts", "group": "navigation@3" }
+      ],
+      "view/item/context": [
+        { "command": "postCms.openPreview", "when": "viewItem =~ /postCms\\.(draft|published)/", "group": "inline@1" },
+        { "command": "postCms.toggleDraft", "when": "viewItem =~ /postCms\\.(draft|published)/", "group": "inline@2" },
+        { "command": "postCms.deletePost", "when": "viewItem =~ /postCms\\.(draft|published)/", "group": "inline@3" },
+        { "command": "postCms.setCategory", "when": "viewItem =~ /postCms\\.(draft|published)/", "group": "1_edit@1" },
+        { "command": "postCms.setTags", "when": "viewItem =~ /postCms\\.(draft|published)/", "group": "1_edit@2" },
+        { "command": "postCms.setSeries", "when": "viewItem =~ /postCms\\.(draft|published)/", "group": "1_edit@3" },
+        { "command": "postCms.setDate", "when": "viewItem =~ /postCms\\.(draft|published)/", "group": "1_edit@4" }
+      ]
+    },
+    "configuration": {
+      "title": "笔记 CMS",
+      "properties": {
+        "postCms.postsDir": {
+          "type": "string",
+          "default": "src/content/posts",
+          "description": "笔记目录，相对仓库根目录"
+        },
+        "postCms.siteUrl": {
+          "type": "string",
+          "default": "http://localhost:4321",
+          "description": "本地预览地址，用来拼 /posts/<文件名>/"
+        },
+        "postCms.devCommand": {
+          "type": "string",
+          "default": "pnpm dev",
+          "description": "「启动本地预览」在终端里跑的命令"
+        },
+        "postCms.defaultCategory": {
+          "type": "string",
+          "default": "日常",
+          "description": "新建文章时的默认分类"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.mjs",
+    "check": "tsc --noEmit",
+    "test": "node --test",
+    "package": "node esbuild.mjs && vsce package --no-dependencies -o post-cms.vsix"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.0.0",
+    "esbuild": "^0.28.0",
+    "typescript": "^5.6.0"
+  }
+}

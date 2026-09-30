@@ -1,0 +1,10 @@
+.vscode/**
+src/**
+test/**
+esbuild.mjs
+tsconfig.json
+node_modules/**
+out/posts.mjs
+out/extension-with-mock.mjs
+**/*.map
+pnpm-lock.yaml

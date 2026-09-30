@@ -117,6 +117,17 @@ series: 建站      # 可选：同系列的文章会自动串成一个列表
 > 不清的话老文章的正文不会重新渲染，插件看着就像没生效）。另外它必须用**路径字符串**引用：
 > 内容层跑在单独的 worker 里，配置里写成函数会被序列化掉、传不过去。
 
+## 用 VS Code 写
+
+仓库里带了个小扩展 `tools/post-cms/`：资源管理器里多一个「笔记」面板，草稿/已发布分组，
+能新建文章、改分类标签系列日期、一键发布或转回草稿、打开本地预览，全部只动 frontmatter、
+不碰正文。装法：
+
+    code --install-extension tools/post-cms/post-cms.vsix
+
+（VSIX 是 `cd tools/post-cms && pnpm install --ignore-workspace && pnpm package` 打出来的，
+也可以让 VS Code 从 VSIX 装。）细节和开发命令见 `tools/post-cms/README.md`。
+
 ## 数据在哪改
 
 `src/site.config.ts` 一个文件全包：`projects`（项目）、`friends`（友链）、`gear`（装备）、
