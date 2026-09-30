@@ -30,9 +30,16 @@ test('package.json 里声明的命令，代码里全都注册了', () => {
   }
 });
 
-test('视图 id 和 viewsWelcome / menus 里写的对得上', () => {
-  for (const v of manifest.contributes.views.explorer) assert.ok(calls.views.includes(v.id), `没建视图：${v.id}`);
-  assert.equal(manifest.contributes.viewsWelcome[0].view, manifest.contributes.views.explorer[0].id);
+test('视图挂在活动栏自己的容器里，id 和 viewsWelcome / menus 里写的对得上', () => {
+  const containers = manifest.contributes.viewsContainers?.activitybar ?? [];
+  assert.equal(containers.length, 1, '应该有一个自己的活动栏容器');
+  assert.equal(containers[0].id, 'postCms');
+  assert.ok(fs.existsSync(path.join(REPO, 'tools/post-cms', containers[0].icon)), '容器图标文件不存在');
+
+  const views = Object.values(manifest.contributes.views).flat();
+  for (const v of views) assert.ok(calls.views.includes(v.id), `没建视图：${v.id}`);
+  assert.deepEqual(Object.keys(manifest.contributes.views), ['postCms'], '视图应该搬进自己的容器，不再挂在资源管理器里');
+  assert.equal(manifest.contributes.viewsWelcome[0].view, views[0].id);
   const all = [...manifest.contributes.menus['view/title'], ...manifest.contributes.menus['view/item/context']];
   for (const m of all) assert.ok(calls.commands.has(m.command), `菜单指向了没注册的命令：${m.command}`);
   // 菜单 when 里写的 viewItem 必须是代码里真的会出现的 contextValue，写错一个字菜单就永远不会出来。
@@ -188,4 +195,70 @@ test('页面数据：读得出来，加一项、删一项，删完字节回到�
   assert.equal(S.readStrings(after, 'doing').at(-1), '把装备页填满');
 
   fs.writeFileSync(configPath, original);
+});
+
+test('点一下就能改：条目、字段、装备里的一件，默认动作都是「改内容」而不是跳文件', async () => {
+  const configPath = path.join(root, 'src/site.config.ts');
+  const original = fs.readFileSync(path.join(REPO, 'src/site.config.ts'), 'utf8');
+  fs.writeFileSync(configPath, original);
+  try {
+    const provider = calls.providers.get('postCms.pages');
+    const pages = provider.getChildren();
+
+    const entry = provider.getChildren(pages[0])[0];
+    assert.equal(provider.getTreeItem(entry).command.command, 'postCms.editData', '点条目应该直接进编辑');
+    const field = provider.getChildren(entry).find((n) => n.kind === 'field');
+    assert.equal(provider.getTreeItem(field).command.command, 'postCms.editData', '点字段应该直接进编辑');
+
+    // 装备：先加一组、再加一件，再确认这一件的默认动作
+    calls.nextInput = (() => { const q = ['键盘']; return () => q.shift(); })();
+    await calls.commands.get('postCms.addData')(pages[2]);
+    const gear = provider.getChildren(pages[2])[0];
+    calls.nextInput = (() => { const q = ['HHKB Pro 2', '每天在敲']; return () => q.shift(); })();
+    await calls.commands.get('postCms.addData')(gear);
+    const item = provider.getChildren(gear).find((n) => n.kind === 'item');
+    assert.equal(provider.getTreeItem(item).command.command, 'postCms.editData', '点装备里的一件也应该直接进编辑');
+
+    // 真的改一下：点字段 → 填新值 → 文件跟着变，正文/别的字段不动
+    calls.nextInput = () => '刚刚改的名字';
+    await calls.commands.get('postCms.editData')(field);
+    const text = fs.readFileSync(configPath, 'utf8');
+    assert.equal(S.unquote(S.readArray(text, 'projects').entries[0].fields.get(field.key).raw), '刚刚改的名字');
+    assert.equal(S.readArray(text, 'projects').entries.length, 2, '别的项目不该被动');
+  } finally {
+    calls.nextInput = undefined;
+    fs.writeFileSync(configPath, original);
+  }
+});
+
+test('editPost：一个入口改元信息，改字段自己写、能派活的派给既有命令', async () => {
+  const file = path.join(root, 'src/content/posts/astro-rewrite.md');
+  const original = fs.readFileSync(file, 'utf8');
+  try {
+    const pick = (...pickers) => { calls.nextQuickPick = (items) => pickers.shift()(items); };
+
+    // 标题：editPost 自己写回 frontmatter
+    pick((items) => items.find((r) => r.key === 'title'));
+    calls.nextInput = () => '换了个标题';
+    await calls.commands.get('postCms.editPost')(P.readPost(file));
+    assert.equal(P.readPost(file).title, '换了个标题');
+
+    // 系列：派给 postCms.setSeries，走它自己的选择流程
+    pick((items) => items.find((r) => r.key === 'series'), (items) => items.find((i) => i.label.includes('新系列')));
+    calls.nextInput = () => '建站';
+    await calls.commands.get('postCms.editPost')(P.readPost(file));
+    assert.equal(P.readPost(file).series, '建站');
+    // frontmatter 之外的部分一个字节都不该动
+    const bodyOf = (text) => text.split('---').slice(2).join('---');
+    assert.equal(bodyOf(fs.readFileSync(file, 'utf8')), bodyOf(original), '正文不该被动');
+
+    // 取消就当没发生
+    pick((items) => undefined);
+    await calls.commands.get('postCms.editPost')(P.readPost(file));
+    assert.equal(P.readPost(file).series, '建站');
+  } finally {
+    calls.nextQuickPick = undefined;
+    calls.nextInput = undefined;
+    fs.writeFileSync(file, original);
+  }
 });

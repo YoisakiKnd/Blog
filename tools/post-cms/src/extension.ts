@@ -129,6 +129,41 @@ export function activate(context: vscode.ExtensionContext): void {
       const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(post.file));
       await vscode.window.showTextDocument(doc);
     }),
+    // 一个入口改完整篇的元信息：选字段 → 填值 → 直接写回 frontmatter，不用自己去翻文件
+    vscode.commands.registerCommand('postCms.editPost', async (post: Post) => {
+      if (!post?.file) return;
+      type Row = vscode.QuickPickItem & { key: string; run?: string };
+      const rows: Row[] = [
+        { key: 'title', label: `$(text-size) 标题：${post.title}` },
+        { key: 'description', label: `$(quote) 摘要：${post.description || '（没写）'}` },
+        { key: 'category', label: `$(tag) 分类：${post.category}`, run: 'postCms.setCategory' },
+        { key: 'tags', label: `$(symbol-color) 标签：${post.tags.join('、') || '（没有）'}`, run: 'postCms.setTags' },
+        { key: 'series', label: `$(list-ordered) 系列：${post.series || '（不参与）'}`, run: 'postCms.setSeries' },
+        { key: 'pubDate', label: `$(calendar) 日期：${post.pubDate || '（没填）'}`, run: 'postCms.setDate' },
+        { key: 'draft', label: `$(circle-outline) 状态：${post.draft ? '草稿' : '已发布'}`, run: 'postCms.toggleDraft' },
+      ];
+      const picked = await vscode.window.showQuickPick(rows, {
+        title: `改《${post.title}》`,
+        placeHolder: '选一项改，改完直接写回文件',
+      });
+      if (!picked) return;
+      if (picked.run) {
+        await vscode.commands.executeCommand(picked.run, post);
+        return;
+      }
+      if (picked.key === 'title') {
+        const value = await vscode.window.showInputBox({ title: '标题', value: post.title, ignoreFocusOut: true });
+        if (value?.trim()) setField(post.file, 'title', value.trim());
+      } else {
+        const value = await vscode.window.showInputBox({
+          title: '一句话摘要（列表页和分享卡片都用它）',
+          value: post.description,
+          ignoreFocusOut: true,
+        });
+        if (value !== undefined) setField(post.file, 'description', value.trim());
+      }
+      provider.refresh();
+    }),
     vscode.commands.registerCommand('postCms.newPost', async () => {
       const dir = postsDir();
       if (!dir) return;

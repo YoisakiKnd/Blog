@@ -45,6 +45,8 @@ export const workspace = {
 
 export const commands = {
   registerCommand: (id, fn) => { calls.commands.set(id, fn); return { dispose() {} }; },
+  // editPost 靠它把活派给 setCategory / setTags 这些既有命令
+  executeCommand: async (id, ...args) => { const fn = calls.commands.get(id); return fn ? fn(...args) : undefined; },
 };
 
 export const env = { openExternal: async (u) => { calls.opened.push(String(u)); return true; } };

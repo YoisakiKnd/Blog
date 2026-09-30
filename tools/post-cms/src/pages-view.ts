@@ -121,7 +121,7 @@ export class PagesProvider implements vscode.TreeDataProvider<Node> {
       item.iconPath = new vscode.ThemeIcon(node.page.id === 'now' ? 'calendar' : 'symbol-array');
       item.contextValue = 'postCms.page';
       item.command = { command: 'postCms.revealData', title: '在 site.config.ts 里定位', arguments: [node] };
-      item.tooltip = `打开 /${node.page.id}/ 数据；点一下跳到 site.config.ts 里的位置`;
+      item.tooltip = `打开 /${node.page.id}/ 数据；点一下跳到 site.config.ts 里 ${node.page.label} 的位置`;
       return item;
     }
     if (node.kind === 'entry') {
@@ -130,7 +130,10 @@ export class PagesProvider implements vscode.TreeDataProvider<Node> {
       const item = new vscode.TreeItem(label || `第 ${node.index + 1} 项`, vscode.TreeItemCollapsibleState.Collapsed);
       item.description = describeEntry(node.page, fields);
       item.contextValue = 'postCms.entry';
-      item.command = { command: 'postCms.revealData', title: '在 site.config.ts 里定位', arguments: [node] };
+      // 点一下就进编辑：先选字段、再填值，改完直接写回 site.config.ts。
+      // 想手动改的走右键菜单的「在 site.config.ts 里定位」。
+      item.command = { command: 'postCms.editData', title: '改内容', arguments: [node] };
+      item.tooltip = '点一下改这一项的内容（也可以展开改单个字段）';
       return item;
     }
     if (node.kind === 'field') {
@@ -148,6 +151,8 @@ export class PagesProvider implements vscode.TreeDataProvider<Node> {
       item.description = fields ? unquote(fields.get('note')?.raw ?? '') : '';
       item.iconPath = new vscode.ThemeIcon('circle-small-filled');
       item.contextValue = 'postCms.item';
+      item.command = { command: 'postCms.editData', title: '改内容', arguments: [node] };
+      item.tooltip = '点一下改这一件的内容';
       return item;
     }
     if (node.kind === 'itemField') {

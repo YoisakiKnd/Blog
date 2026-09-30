@@ -13,6 +13,7 @@ const EXPECTED = [
   'postCms.refresh',
   'postCms.startDev',
   'postCms.openPost',
+  'postCms.editPost',
   'postCms.openPreview',
   'postCms.toggleDraft',
   'postCms.setCategory',
@@ -43,7 +44,10 @@ async function run() {
 
   // 视图 id 必须和 package.json 一致：执行一次 refresh 就说明注册上了
   await vscode.commands.executeCommand('postCms.refresh');
-  console.log('[e2e] refresh 可执行');
+  await vscode.commands.executeCommand('postCms.refreshPages');
+  // 活动栏容器：容器 id 写错这条命令会抛「command not found」
+  await vscode.commands.executeCommand('workbench.view.extension.postCms');
+  console.log('[e2e] refresh 可执行，活动栏容器 postCms 存在');
 
   const file = path.join(folder.uri.fsPath, 'src/content/posts/astro-rewrite.md');
   const post = { file, slug: 'astro-rewrite', title: '把站点从 Fuwari 换成 Astro', category: '折腾', tags: [], draft: false, pubDate: '2026-09-27', description: '' };

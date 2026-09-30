@@ -9,3 +9,4 @@ out/posts.mjs
 out/*.mjs
 **/*.map
 pnpm-lock.yaml
+pnpm-workspace.yaml

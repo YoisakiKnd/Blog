@@ -1,8 +1,8 @@
 {
   "name": "post-cms",
   "displayName": "笔记 CMS",
-  "description": "在编辑器里新建、改 frontmatter、发布笔记，并打开本地预览",
-  "version": "0.2.0",
+  "description": "在侧边栏里管笔记和数据页：点一下就能改，不用翻配置文件",
+  "version": "0.3.0",
   "publisher": "tyling",
   "license": "MIT",
   "repository": {
@@ -24,8 +24,17 @@
     "onCommand:postCms.startDev"
   ],
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "postCms",
+          "title": "笔记 CMS",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
     "views": {
-      "explorer": [
+      "postCms": [
         {
           "id": "postCms.posts",
           "name": "笔记",
@@ -80,6 +89,12 @@
         "icon": "$(check)"
       },
       {
+        "command": "postCms.editPost",
+        "title": "改这篇的内容",
+        "category": "笔记",
+        "icon": "$(edit)"
+      },
+      {
         "command": "postCms.setCategory",
         "title": "改分类",
         "category": "笔记"
@@ -127,13 +142,15 @@
       },
       {
         "command": "postCms.editData",
-        "title": "改字段",
-        "category": "笔记"
+        "title": "改内容",
+        "category": "笔记",
+        "icon": "$(edit)"
       },
       {
         "command": "postCms.removeData",
         "title": "删掉这一项",
-        "category": "笔记"
+        "category": "笔记",
+        "icon": "$(trash)"
       }
     ],
     "menus": {
@@ -176,6 +193,11 @@
           "group": "inline@3"
         },
         {
+          "command": "postCms.editPost",
+          "when": "viewItem =~ /postCms\\.(draft|published)/",
+          "group": "1_edit@0"
+        },
+        {
           "command": "postCms.setCategory",
           "when": "viewItem =~ /postCms\\.(draft|published)/",
           "group": "1_edit@1"
@@ -203,11 +225,16 @@
         {
           "command": "postCms.revealData",
           "when": "view == postCms.pages",
-          "group": "inline@2"
+          "group": "8_locate@1"
         },
         {
           "command": "postCms.addData",
           "when": "view == postCms.pages && (viewItem == postCms.page || viewItem == postCms.entry || viewItem == postCms.doing)",
+          "group": "inline@2"
+        },
+        {
+          "command": "postCms.editData",
+          "when": "view == postCms.pages && viewItem != postCms.page",
           "group": "inline@3"
         },
         {

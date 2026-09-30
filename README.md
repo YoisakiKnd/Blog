@@ -152,17 +152,26 @@ series: 建站            # 可选：同系列的文章会自动串成一个列�
 
 ## 用 VS Code 写（可选）
 
-仓库里带了个自用的小扩展 `tools/post-cms/`，装上后资源管理器里多出两个面板：
+仓库里带了个自用的小扩展 `tools/post-cms/`。装上以后左边活动栏多一个自己的图标，两个面板，
+**点一下就是编辑**，不用先跳到文件里再手动改：
 
-- **笔记**：草稿 / 已发布分组，新建文章、改分类标签系列日期、一键发布或转回草稿、打开本地预览。
-  只动 frontmatter、不碰正文
-- **页面数据**：管 `src/site.config.ts` 里那几页（项目 / 友链 / 装备 / 书架 / 现在），加一项、
-  改字段、删一项、跳回配置文件定位
+- **笔记**：草稿 / 已发布分组，新建文章、一键发布或转回草稿、打开本地预览；右键「改这篇的内容」
+  就地改标题、摘要、分类、标签、系列、日期。只动 frontmatter、不碰正文
+- **页面数据**：管 `src/site.config.ts` 里那几页（项目 / 友链 / 装备 / 书架 / 现在）。点条目弹出
+  「改哪个字段」，点字段直接改那一个；加一项、删一项、想手动改就右键定位回配置文件
+
+![VS Code 里的样子](docs/preview-vscode.webp)
+
+`.vsix` 是构建产物，没进仓库。从 [Releases](https://github.com/YoisakiKnd/Blog/releases) 下载后：
 
 ```bash
-code --install-extension tools/post-cms/post-cms.vsix
-# 或者 VS Code → 扩展 → 从 VSIX 安装
+code --install-extension post-cms-0.3.0.vsix
+# 或者 VS Code → 扩展面板右上角 … → 从 VSIX 安装
 ```
+
+也可以自己打一个：`cd tools/post-cms && pnpm install --ignore-workspace && pnpm package`。
+打 tag（`post-cms-v*`）会触发 [工作流](.github/workflows/extension-release.yml) 自动跑类型检查、
+测试、打包并挂到 Release 上。
 
 运行时零依赖；frontmatter 按行改、`site.config.ts` 按括号和字符串边界改，都只替换命中的那一段，
 其余字节不动。细节和开发命令见 [`tools/post-cms/README.md`](tools/post-cms/README.md)。

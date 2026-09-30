@@ -1,0 +1,71 @@
+name: 打包 VS Code 扩展
+
+# 扩展的 .vsix 是构建产物，不提交进仓库。打个 tag（或者手动触发）就自动打包并挂到 Release 上：
+#     git tag post-cms-v0.3.0 && git push origin post-cms-v0.3.0
+on:
+  push:
+    tags:
+      - 'post-cms-v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: 检查、测试、打包
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # 建 Release、传附件要用
+    defaults:
+      run:
+        working-directory: tools/post-cms
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 装依赖
+        run: |
+          npm install -g pnpm@10
+          pnpm install --ignore-workspace --frozen-lockfile
+
+      # 顺序不能换：测试 import 的是 out/ 里的产物
+      - name: 打包扩展本体
+        run: pnpm build
+
+      - name: 类型检查
+        run: pnpm check
+
+      - name: 测试
+        run: pnpm test
+
+      - name: 取版本号
+        id: v
+        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: 打 vsix
+        run: npx --yes @vscode/vsce@3 package --no-dependencies -o "post-cms-${{ steps.v.outputs.version }}.vsix"
+
+      - name: 手动触发时先留个产物
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: post-cms-${{ steps.v.outputs.version }}
+          path: tools/post-cms/post-cms-${{ steps.v.outputs.version }}.vsix
+
+      - name: 打 tag 时发 Release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            "post-cms-${{ steps.v.outputs.version }}.vsix" \
+            --title "VS Code 扩展 ${{ steps.v.outputs.version }}" \
+            --notes "$(cat <<'EOF'
+          VS Code 扩展「笔记 CMS」。安装：
+
+              code --install-extension post-cms-${{ steps.v.outputs.version }}.vsix
+
+          或者 VS Code → 扩展面板右上角 … → 从 VSIX 安装。用法见仓库里的 tools/post-cms/README.md。
+          EOF
+          )"
