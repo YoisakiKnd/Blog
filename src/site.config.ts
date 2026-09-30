@@ -20,7 +20,6 @@ export const site = {
   /** README 框标题栏上的仓库名和文件名；右边那个铅笔只是照 GitHub 的样子放的装饰，点了不做任何事 */
   repo: githubUser,
   readme: 'README.md',
-  /** 侧栏站点卡里的一句话 */
   /** 文章列表每页条数 */
   perPage: 8,
   /** 底部波浪图上面的那句话 */
