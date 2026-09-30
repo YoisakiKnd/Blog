@@ -92,6 +92,18 @@ draft: false      # true 就不发布
   里面的经历、数字、书名都请替换或删掉
 - 数据卡和徽章是外链图，会随对方服务实时更新；服务挂了就是空白，所以 `alt` 里都写了说明
 
+## 部署
+
+纯静态，丢哪都能跑。Cloudflare Pages 上的设置是：构建命令 `pnpm build`、产物目录 `dist`、
+Node 20 以上（它那边给的是 24）。
+
+一个坑记一下：仓库里那个 `pnpm-workspace.yaml` **不能删、也不能少 `packages:` 字段**。
+pnpm 10 只要看见这个文件就要求有 `packages`，缺了直接报
+`ERROR packages field missing or empty`，构建就挂在这一步（Cloudflare 上跑的是 pnpm 10，
+本地是 12，两边表现不一样，所以本地测不出来）。同一个文件里 `allowBuilds`（pnpm 11/12 认）
+和 `onlyBuiltDependencies`（pnpm 10 认）都写着——两个版本叫法不同，写全了 esbuild 的
+安装脚本才不会被拦下来。
+
 ## 关于头像
 
 用的是你给的那张 Gravatar：抓下来缩到 256×256 存成 `public/avatar.webp`（6.7 KB，

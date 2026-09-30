@@ -1,3 +1,13 @@
+# 单包仓库。pnpm 10+ 只要看到这个文件就要求有 packages 字段，
+# 缺了会报 "packages field missing or empty"，Cloudflare 构建就是这么挂的。
+packages:
+  - '.'
+
+# 允许这些依赖跑安装脚本，否则 pnpm 会拦下来（日志里提示 approve-builds）。
+# 同一个设置两个版本名称不同，都写上：pnpm 11/12 认 allowBuilds，pnpm 10 认 onlyBuiltDependencies。
 allowBuilds:
-  esbuild: set this to true or false
-  sharp: set this to true or false
+  esbuild: true
+  sharp: false
+
+onlyBuiltDependencies:
+  - esbuild
